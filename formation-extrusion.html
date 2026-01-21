@@ -746,7 +746,6 @@
 
                 updateProgress();
                 saveData();
-                showNotification();
                 applyFilter();
             }
         }
@@ -848,7 +847,7 @@
 
         function setupAutoSave() {
             document.querySelectorAll('input, textarea').forEach(function(input) {
-                input.addEventListener('change', function() { saveData(); showNotification(); });
+                input.addEventListener('change', function() { saveData(); });
             });
         }
 
