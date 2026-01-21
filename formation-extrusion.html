@@ -162,16 +162,72 @@
         .hidden-input { display: none; }
 
         @media print {
-            .header { position: static; background: white !important; color: black !important; box-shadow: none; border-bottom: 3px solid var(--gemef-orange); }
-            .header-actions { display: none; }
-            .profile-bar { display: none; }
-            .filters-bar { display: none; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            @page { size: A4; margin: 5mm; }
+            body { font-size: 8px !important; line-height: 1.1 !important; }
+
+            .header { position: static; background: white !important; color: black !important; box-shadow: none; border-bottom: 2px solid var(--gemef-orange); padding: 5px 10px !important; display: flex !important; }
+            .header-actions { display: none !important; }
+            .header-title h1 { font-size: 14px !important; }
+            .header-title p { font-size: 9px !important; }
+            .logo { width: 40px !important; height: 40px !important; }
+            .logo-section { gap: 10px !important; }
+            .profile-bar { display: none !important; }
+            .filters-bar { display: none !important; }
+            .container { padding: 5px !important; max-width: 100% !important; }
+
+            /* Info cards - 4 en ligne */
+            .info-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 5px !important; margin-bottom: 8px !important; }
+            .info-card { padding: 5px 8px !important; border-radius: 4px !important; box-shadow: none !important; border: 1px solid #ddd !important; }
+            .info-card h3 { font-size: 8px !important; margin-bottom: 4px !important; padding-bottom: 2px !important; border-bottom-width: 1px !important; }
+            .info-card.salarie-card { background: white !important; border: 1px solid var(--gemef-orange) !important; box-shadow: none !important; }
+            .info-card.salarie-card h3 { margin: -5px -8px 4px -8px !important; padding: 4px 8px !important; font-size: 8px !important; border-radius: 3px 3px 0 0 !important; }
+            .info-row { margin-bottom: 2px !important; flex-direction: column !important; }
+            .info-label { width: 100% !important; font-size: 7px !important; margin-bottom: 1px !important; }
+            .info-value input { padding: 2px 4px !important; font-size: 8px !important; border-radius: 3px !important; }
+
+            /* Progress masque pour gagner de la place */
+            .progress-overview { display: none !important; }
+
+            /* Sections ultra compactes */
+            .section { margin-bottom: 4px !important; border-radius: 4px !important; page-break-inside: avoid !important; box-shadow: none !important; border: 1px solid #ddd !important; }
             .section.collapsed .section-content { display: block !important; }
             .section.hidden { display: block !important; }
-            .task.hidden { display: flex !important; }
-            .status-btn.active { border: 2px solid currentColor !important; }
-            .signature-canvas { border-style: solid; }
-            .clear-signature { display: none; }
+            .section-header { padding: 4px 8px !important; background: #4A4A4A !important; }
+            .section-title { font-size: 9px !important; gap: 5px !important; }
+            .section-number { width: 16px !important; height: 16px !important; font-size: 8px !important; border-radius: 2px !important; }
+            .section-progress { display: none !important; }
+            .toggle-icon { display: none !important; }
+
+            /* Taches en liste compacte */
+            .section-content { padding: 3px 6px !important; display: block !important; column-count: 2 !important; column-gap: 10px !important; }
+            .task { padding: 2px 4px !important; border-bottom: none !important; margin-bottom: 2px !important; break-inside: avoid !important; display: block !important; background: none !important; }
+            .task.hidden { display: block !important; }
+            .task-main { display: inline !important; }
+            .task-text { font-size: 7px !important; display: inline !important; }
+            .task-status { display: inline !important; margin-left: 3px !important; }
+            .status-btn { padding: 1px 3px !important; font-size: 6px !important; border-radius: 2px !important; display: none !important; }
+            .status-btn.active { display: inline !important; border: 1px solid currentColor !important; }
+            .task-history { display: none !important; }
+
+            /* Commentaires et signatures compacts */
+            .comments-section { padding: 5px 8px !important; margin-bottom: 5px !important; box-shadow: none !important; border: 1px solid #ddd !important; }
+            .comments-section h3 { font-size: 9px !important; margin-bottom: 3px !important; }
+            .comments-section textarea { min-height: 25px !important; font-size: 8px !important; padding: 4px !important; }
+
+            .signatures-grid { gap: 5px !important; margin-bottom: 5px !important; }
+            .signature-card { padding: 5px !important; box-shadow: none !important; border: 1px solid #ddd !important; }
+            .signature-card h4 { font-size: 8px !important; margin-bottom: 3px !important; }
+            .signature-field { margin-bottom: 2px !important; }
+            .signature-field label { font-size: 7px !important; margin-bottom: 1px !important; }
+            .signature-field input { padding: 2px !important; font-size: 8px !important; }
+            .signature-canvas { height: 35px !important; border: 1px solid #ccc !important; }
+            .clear-signature { display: none !important; }
+            .signature-canvas-container { margin-top: 3px !important; }
+
+            .footer { padding: 3px !important; font-size: 7px !important; }
+            .notification { display: none !important; }
+            .modal-overlay { display: none !important; }
         }
         @media (max-width: 768px) {
             .header { flex-direction: column; gap: 15px; text-align: center; }
