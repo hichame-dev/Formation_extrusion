@@ -866,10 +866,6 @@
                 taskHistory = {};
                 customLogo = null;
 
-                // Reset logo
-                document.getElementById('logoText').style.display = 'block';
-                document.getElementById('logoImage').style.display = 'none';
-
                 // Reset form fields
                 document.querySelectorAll('input, textarea').forEach(function(el) {
                     if (el.id !== 'poste' && el.type !== 'file') el.value = '';
