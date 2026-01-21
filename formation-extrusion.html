@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formation Poste Extrusion - GEMEF Industries</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@400;500;600;700&display=swap');
         :root {
             --gemef-orange: #E87722;
             --gemef-orange-dark: #C5611A;
@@ -20,16 +20,16 @@
             --text-secondary: #666666;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Barlow', Arial, Helvetica, sans-serif; background: var(--bg-main); color: var(--text-primary); line-height: 1.5; }
+        body { font-family: 'Roboto', Arial, Helvetica, sans-serif; background: var(--bg-main); color: var(--text-primary); line-height: 1.5; }
         .header { background: linear-gradient(135deg, var(--gemef-gray) 0%, #2C2C2C 100%); color: white; padding: 20px 30px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
         .logo-section { display: flex; align-items: center; gap: 20px; }
-        .logo { width: 70px; height: 70px; background: var(--gemef-orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', Arial, sans-serif; font-weight: 700; font-size: 28px; color: white; overflow: hidden; cursor: pointer; position: relative; }
+        .logo { width: 70px; height: 70px; background: var(--gemef-orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', Arial, sans-serif; font-weight: 700; font-size: 28px; color: white; overflow: hidden; cursor: pointer; position: relative; }
         .logo img { width: 100%; height: 100%; object-fit: contain; }
         .logo-upload { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .header-title h1 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 28px; font-weight: 700; text-transform: uppercase; }
+        .header-title h1 { font-family: 'Montserrat', Arial, sans-serif; font-size: 28px; font-weight: 700; text-transform: uppercase; }
         .header-title p { font-size: 14px; opacity: 0.8; }
         .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-family: 'Roboto', Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--gemef-orange); color: white; }
         .btn-primary:hover { background: var(--gemef-orange-dark); transform: translateY(-2px); }
         .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); }
@@ -39,7 +39,7 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
         .progress-overview { background: var(--bg-card); border-radius: 12px; padding: 25px 30px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
         .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .progress-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 20px; font-weight: 600; color: var(--gemef-gray); text-transform: uppercase; }
+        .progress-title { font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 600; color: var(--gemef-gray); text-transform: uppercase; }
         .progress-percentage { font-size: 36px; font-weight: 800; color: var(--gemef-orange); }
         .progress-bar-container { background: #E8E8E8; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, var(--gemef-orange) 0%, var(--status-acquired) 100%); border-radius: 6px; transition: width 0.5s ease; }
@@ -55,9 +55,9 @@
         /* Barre de profils */
         .profile-bar { background: linear-gradient(135deg, var(--gemef-orange) 0%, var(--gemef-orange-dark) 100%); border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .profile-bar label { color: white; font-weight: 600; }
-        .profile-select { padding: 10px 15px; border: none; border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; font-weight: 600; min-width: 200px; cursor: pointer; }
+        .profile-select { padding: 10px 15px; border: none; border-radius: 6px; font-family: 'Roboto', Arial, sans-serif; font-size: 14px; font-weight: 600; min-width: 200px; cursor: pointer; }
         .profile-select:focus { outline: 2px solid white; }
-        .profile-btn { padding: 10px 16px; border: 2px solid white; border-radius: 6px; background: transparent; color: white; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .profile-btn { padding: 10px 16px; border: 2px solid white; border-radius: 6px; background: transparent; color: white; font-family: 'Roboto', Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
         .profile-btn:hover { background: white; color: var(--gemef-orange); }
         .profile-btn.danger { border-color: #ffcccc; color: #ffcccc; }
         .profile-btn.danger:hover { background: #ffcccc; color: var(--status-pending); }
@@ -65,7 +65,7 @@
         /* Filtres */
         .filters-bar { background: var(--bg-card); border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .filters-label { font-weight: 600; color: var(--gemef-gray); }
-        .filter-btn { padding: 8px 16px; border: 2px solid var(--border-color); border-radius: 20px; background: white; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .filter-btn { padding: 8px 16px; border: 2px solid var(--border-color); border-radius: 20px; background: white; font-family: 'Roboto', Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
         .filter-btn:hover { border-color: var(--gemef-orange); }
         .filter-btn.active { background: var(--gemef-orange); color: white; border-color: var(--gemef-orange); }
         .filter-btn.filter-pending.active { background: var(--status-pending); border-color: var(--status-pending); }
@@ -74,11 +74,11 @@
 
         .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
         .info-card { background: var(--bg-card); border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
-        .info-card h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 16px; font-weight: 600; color: var(--gemef-orange); text-transform: uppercase; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gemef-orange); }
+        .info-card h3 { font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; font-weight: 600; color: var(--gemef-orange); text-transform: uppercase; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gemef-orange); }
         .info-row { display: flex; margin-bottom: 12px; }
         .info-label { width: 140px; font-weight: 500; color: var(--text-secondary); font-size: 14px; }
         .info-value { flex: 1; }
-        .info-value input { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; }
+        .info-value input { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Roboto', Arial, sans-serif; font-size: 14px; }
         .info-value input:focus { outline: none; border-color: var(--gemef-orange); }
 
         /* Carte Salarie en formation - Style special */
@@ -92,7 +92,7 @@
         .section.hidden { display: none; }
         .section-header { background: linear-gradient(135deg, var(--gemef-gray) 0%, #3D3D3D 100%); color: white; padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .section-header:hover { background: linear-gradient(135deg, #3D3D3D 0%, var(--gemef-gray) 100%); }
-        .section-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 18px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
+        .section-title { font-family: 'Montserrat', Arial, sans-serif; font-size: 18px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
         .section-number { background: var(--gemef-orange); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
         .section-progress { display: flex; align-items: center; gap: 15px; }
         .section-progress-bar { width: 120px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
@@ -109,7 +109,7 @@
         .task-text { flex: 1; font-size: 14px; padding-right: 20px; }
         .task-status { display: flex; gap: 8px; }
         .task-history { font-size: 11px; color: var(--text-secondary); padding-left: 5px; font-style: italic; }
-        .status-btn { padding: 8px 16px; border: 2px solid transparent; border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
+        .status-btn { padding: 8px 16px; border: 2px solid transparent; border-radius: 6px; font-family: 'Roboto', Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
         .status-btn.pending { background: #FDEAEA; color: var(--status-pending); }
         .status-btn.pending.active { background: var(--status-pending); color: white; }
         .status-btn.progress { background: #FEF5E7; color: var(--status-progress); }
@@ -118,15 +118,15 @@
         .status-btn.acquired.active { background: var(--status-acquired); color: white; }
         .status-btn:hover { transform: scale(1.05); }
         .comments-section { background: var(--bg-card); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
-        .comments-section h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 18px; font-weight: 600; color: var(--gemef-gray); text-transform: uppercase; margin-bottom: 15px; }
-        .comments-section textarea { width: 100%; min-height: 120px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; resize: vertical; }
+        .comments-section h3 { font-family: 'Montserrat', Arial, sans-serif; font-size: 18px; font-weight: 600; color: var(--gemef-gray); text-transform: uppercase; margin-bottom: 15px; }
+        .comments-section textarea { width: 100%; min-height: 120px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Roboto', Arial, sans-serif; font-size: 14px; resize: vertical; }
         .comments-section textarea:focus { outline: none; border-color: var(--gemef-orange); }
         .signatures-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
         .signature-card { background: var(--bg-card); border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); text-align: center; }
-        .signature-card h4 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 16px; font-weight: 600; color: var(--gemef-orange); text-transform: uppercase; margin-bottom: 15px; }
+        .signature-card h4 { font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; font-weight: 600; color: var(--gemef-orange); text-transform: uppercase; margin-bottom: 15px; }
         .signature-field { margin-bottom: 12px; }
         .signature-field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
-        .signature-field input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; text-align: center; }
+        .signature-field input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Roboto', Arial, sans-serif; font-size: 14px; text-align: center; }
         .signature-field input:focus { outline: none; border-color: var(--gemef-orange); }
 
         /* Signature Canvas */
@@ -145,12 +145,12 @@
         .modal-overlay.show { display: flex; }
         .modal { background: white; border-radius: 16px; padding: 0; max-width: 450px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .modal-header { background: linear-gradient(135deg, var(--gemef-orange) 0%, var(--gemef-orange-dark) 100%); color: white; padding: 20px 25px; border-radius: 16px 16px 0 0; }
-        .modal-header h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 22px; margin: 0; text-transform: uppercase; }
+        .modal-header h3 { font-family: 'Montserrat', Arial, sans-serif; font-size: 22px; margin: 0; text-transform: uppercase; }
         .modal-header p { font-size: 13px; opacity: 0.9; margin-top: 5px; }
         .modal-body { padding: 25px; }
         .modal-field { margin-bottom: 20px; }
         .modal-field label { display: block; font-weight: 600; color: var(--gemef-gray); margin-bottom: 8px; font-size: 14px; }
-        .modal-field input { width: 100%; padding: 14px 16px; border: 2px solid var(--border-color); border-radius: 10px; font-family: 'Barlow', Arial, sans-serif; font-size: 16px; transition: all 0.2s ease; }
+        .modal-field input { width: 100%; padding: 14px 16px; border: 2px solid var(--border-color); border-radius: 10px; font-family: 'Roboto', Arial, sans-serif; font-size: 16px; transition: all 0.2s ease; }
         .modal-field input:focus { outline: none; border-color: var(--gemef-orange); box-shadow: 0 0 0 4px rgba(232, 119, 34, 0.15); }
         .modal-field input::placeholder { color: #aaa; }
         .modal-actions { display: flex; gap: 12px; padding: 0 25px 25px 25px; }
