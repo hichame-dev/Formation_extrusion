@@ -822,12 +822,12 @@
                 taskHistory = data.taskHistory || {};
                 customLogo = data.customLogo || null;
 
-                // Load custom logo
+                // Load custom logo (si un logo personnalise a ete importe)
                 if (customLogo) {
-                    document.getElementById('logoText').style.display = 'none';
                     var logoImg = document.getElementById('logoImage');
-                    logoImg.src = customLogo;
-                    logoImg.style.display = 'block';
+                    if (logoImg) {
+                        logoImg.src = customLogo;
+                    }
                 }
 
                 if (data.formInfo) {
@@ -862,27 +862,7 @@
         function resetData() {
             if (confirm('Etes-vous sur de vouloir reinitialiser toutes les donnees ? Cette action est irreversible.')) {
                 localStorage.removeItem('gemef-formation-extrusion');
-                taskStatus = {};
-                taskHistory = {};
-                customLogo = null;
-
-                // Reset form fields
-                document.querySelectorAll('input, textarea').forEach(function(el) {
-                    if (el.id !== 'poste' && el.type !== 'file') el.value = '';
-                });
-
-                // Clear signatures
-                ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
-                    var canvas = document.getElementById(id);
-                    var ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                });
-
-                renderSections();
-                updateProgress();
-                currentFilter = 'all';
-                document.querySelectorAll('.filter-btn').forEach(function(btn) { btn.classList.remove('active'); });
-                document.querySelector('.filter-btn').classList.add('active');
+                location.reload();
             }
         }
 
