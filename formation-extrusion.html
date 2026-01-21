@@ -52,6 +52,16 @@
         .stat-count { font-weight: 700; }
         .stat-label { color: var(--text-secondary); }
 
+        /* Barre de profils */
+        .profile-bar { background: linear-gradient(135deg, var(--gemef-orange) 0%, var(--gemef-orange-dark) 100%); border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .profile-bar label { color: white; font-weight: 600; }
+        .profile-select { padding: 10px 15px; border: none; border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; font-weight: 600; min-width: 200px; cursor: pointer; }
+        .profile-select:focus { outline: 2px solid white; }
+        .profile-btn { padding: 10px 16px; border: 2px solid white; border-radius: 6px; background: transparent; color: white; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .profile-btn:hover { background: white; color: var(--gemef-orange); }
+        .profile-btn.danger { border-color: #ffcccc; color: #ffcccc; }
+        .profile-btn.danger:hover { background: #ffcccc; color: var(--status-pending); }
+
         /* Filtres */
         .filters-bar { background: var(--bg-card); border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .filters-label { font-weight: 600; color: var(--gemef-gray); }
@@ -136,6 +146,7 @@
         @media print {
             .header { position: static; background: white !important; color: black !important; box-shadow: none; border-bottom: 3px solid var(--gemef-orange); }
             .header-actions { display: none; }
+            .profile-bar { display: none; }
             .filters-bar { display: none; }
             .section.collapsed .section-content { display: block !important; }
             .section.hidden { display: block !important; }
@@ -176,6 +187,16 @@
         </div>
     </header>
     <div class="container">
+        <!-- Barre de profils -->
+        <div class="profile-bar">
+            <label>Profil :</label>
+            <select id="profileSelect" class="profile-select" onchange="switchProfile()">
+                <option value="">-- Nouveau profil --</option>
+            </select>
+            <button class="profile-btn" onclick="createProfile()">+ Nouveau</button>
+            <button class="profile-btn danger" onclick="deleteProfile()">Supprimer</button>
+        </div>
+
         <div class="progress-overview">
             <div class="progress-header">
                 <span class="progress-title">Progression globale</span>
@@ -381,8 +402,10 @@
         var currentFilter = 'all';
         var signatureCanvases = {};
         var customLogo = null;
+        var currentProfile = null;
 
         document.addEventListener('DOMContentLoaded', function() {
+            loadProfiles();
             loadData();
             renderSections();
             updateProgress();
@@ -390,6 +413,116 @@
             initSignatureCanvases();
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR');
         });
+
+        // ===== GESTION DES PROFILS =====
+        function getProfileKey(profileId) {
+            return 'gemef-formation-' + profileId;
+        }
+
+        function loadProfiles() {
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var select = document.getElementById('profileSelect');
+            select.innerHTML = '<option value="">-- Selectionner un profil --</option>';
+            profiles.forEach(function(profile) {
+                var option = document.createElement('option');
+                option.value = profile.id;
+                option.textContent = profile.name + ' (' + profile.progress + '%)';
+                select.appendChild(option);
+            });
+            // Selectionner le dernier profil utilise
+            var lastProfile = localStorage.getItem('gemef-last-profile');
+            if (lastProfile && profiles.find(function(p) { return p.id === lastProfile; })) {
+                select.value = lastProfile;
+                currentProfile = lastProfile;
+            }
+        }
+
+        function createProfile() {
+            var nom = prompt('Nom du salarie en formation:');
+            if (!nom || nom.trim() === '') return;
+
+            var prenom = prompt('Prenom:');
+            if (!prenom || prenom.trim() === '') return;
+
+            var profileId = Date.now().toString();
+            var profileName = nom.trim() + ' ' + prenom.trim();
+
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            profiles.push({ id: profileId, name: profileName, progress: 0 });
+            localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+
+            // Initialiser les donnees du profil
+            var initialData = {
+                taskStatus: {},
+                taskHistory: {},
+                formInfo: {
+                    eleveNom: nom.trim(),
+                    elevePrenom: prenom.trim()
+                }
+            };
+            localStorage.setItem(getProfileKey(profileId), JSON.stringify(initialData));
+
+            currentProfile = profileId;
+            localStorage.setItem('gemef-last-profile', profileId);
+            loadProfiles();
+            document.getElementById('profileSelect').value = profileId;
+            location.reload();
+        }
+
+        function switchProfile() {
+            var select = document.getElementById('profileSelect');
+            var profileId = select.value;
+
+            if (!profileId) {
+                createProfile();
+                return;
+            }
+
+            currentProfile = profileId;
+            localStorage.setItem('gemef-last-profile', profileId);
+            location.reload();
+        }
+
+        function deleteProfile() {
+            if (!currentProfile) {
+                alert('Aucun profil selectionne');
+                return;
+            }
+
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var profile = profiles.find(function(p) { return p.id === currentProfile; });
+
+            if (!confirm('Supprimer le profil "' + profile.name + '" ? Cette action est irreversible.')) return;
+
+            // Supprimer les donnees du profil
+            localStorage.removeItem(getProfileKey(currentProfile));
+
+            // Retirer de la liste
+            profiles = profiles.filter(function(p) { return p.id !== currentProfile; });
+            localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+
+            currentProfile = null;
+            localStorage.removeItem('gemef-last-profile');
+            location.reload();
+        }
+
+        function updateProfileProgress() {
+            if (!currentProfile) return;
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var totalTasks = 0, acquiredCount = 0;
+            formationData.sections.forEach(function(section) {
+                section.tasks.forEach(function(_, index) {
+                    totalTasks++;
+                    if (taskStatus[section.id + '-' + index] === 'acquired') acquiredCount++;
+                });
+            });
+            var progress = Math.round((acquiredCount / totalTasks) * 100);
+            profiles = profiles.map(function(p) {
+                if (p.id === currentProfile) p.progress = progress;
+                return p;
+            });
+            localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+        }
 
         // ===== SIGNATURE CANVAS =====
         function initSignatureCanvases() {
@@ -412,7 +545,8 @@
                 };
 
                 // Load saved signature if exists
-                var saved = localStorage.getItem('gemef-formation-extrusion');
+                if (!currentProfile) return;
+                var saved = localStorage.getItem(getProfileKey(currentProfile));
                 if (saved) {
                     var data = JSON.parse(saved);
                     if (data.signatures && data.signatures[id]) {
@@ -810,11 +944,15 @@
                     signatureChefDate: document.getElementById('signatureChefDate').value
                 }
             };
-            localStorage.setItem('gemef-formation-extrusion', JSON.stringify(data));
+            if (currentProfile) {
+                localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(data));
+                updateProfileProgress();
+            }
         }
 
         function loadData() {
-            var saved = localStorage.getItem('gemef-formation-extrusion');
+            if (!currentProfile) return;
+            var saved = localStorage.getItem(getProfileKey(currentProfile));
             if (saved) {
                 var data = JSON.parse(saved);
                 taskStatus = data.taskStatus || {};
@@ -859,8 +997,29 @@
         }
 
         function resetData() {
-            if (confirm('Etes-vous sur de vouloir reinitialiser toutes les donnees ? Cette action est irreversible.')) {
-                localStorage.removeItem('gemef-formation-extrusion');
+            if (!currentProfile) {
+                alert('Aucun profil selectionne');
+                return;
+            }
+            if (confirm('Etes-vous sur de vouloir reinitialiser ce profil ? Cette action est irreversible.')) {
+                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                var profile = profiles.find(function(p) { return p.id === currentProfile; });
+                // Reinitialiser les donnees mais garder le nom
+                var initialData = {
+                    taskStatus: {},
+                    taskHistory: {},
+                    formInfo: {
+                        eleveNom: profile ? profile.name.split(' ')[0] : '',
+                        elevePrenom: profile ? profile.name.split(' ').slice(1).join(' ') : ''
+                    }
+                };
+                localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(initialData));
+                // Mettre a jour le progress a 0
+                profiles = profiles.map(function(p) {
+                    if (p.id === currentProfile) p.progress = 0;
+                    return p;
+                });
+                localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
                 location.reload();
             }
         }
