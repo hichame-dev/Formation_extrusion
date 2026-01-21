@@ -161,6 +161,50 @@
         /* Hidden file input */
         .hidden-input { display: none; }
 
+        /* ===== RESPONSIVE MOBILE/TABLETTE ===== */
+        @media screen and (max-width: 1024px) {
+            .info-grid { grid-template-columns: repeat(2, 1fr); }
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .header-actions { justify-content: center; }
+        }
+
+        @media screen and (max-width: 768px) {
+            .container { padding: 15px; }
+            .info-grid { grid-template-columns: 1fr; gap: 15px; }
+            .header { padding: 15px; }
+            .header-title h1 { font-size: 22px; }
+            .header-actions { flex-wrap: wrap; justify-content: center; }
+            .btn { padding: 10px 16px; font-size: 13px; }
+            .profile-bar { flex-direction: column; gap: 10px; padding: 15px; }
+            .profile-select { width: 100%; }
+            .profile-btn { flex: 1; text-align: center; }
+            .filters-bar { flex-direction: column; gap: 10px; }
+            .filter-btn { width: 100%; }
+            .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .section-progress { width: 100%; justify-content: space-between; }
+            .section-progress-bar { flex: 1; }
+            .task-main { flex-direction: column; gap: 10px; }
+            .task-status { justify-content: flex-start; flex-wrap: wrap; }
+            .status-btn { flex: 1; min-width: 80px; text-align: center; }
+            .signatures-grid { grid-template-columns: 1fr; }
+            .progress-stats { flex-direction: column; gap: 15px; }
+        }
+
+        @media screen and (max-width: 480px) {
+            .header-title h1 { font-size: 18px; }
+            .header-title p { font-size: 12px; }
+            .logo { width: 50px; height: 50px; }
+            .btn { padding: 8px 12px; font-size: 12px; }
+            .section-title { font-size: 14px; }
+            .section-number { width: 26px; height: 26px; font-size: 12px; }
+            .task-text { font-size: 13px; }
+            .status-btn { padding: 6px 10px; font-size: 11px; }
+            .info-card { padding: 15px; }
+            .info-card h3 { font-size: 14px; }
+            .progress-percentage { font-size: 28px; }
+            .progress-title { font-size: 16px; }
+        }
+
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             @page { size: A4; margin: 5mm; }
