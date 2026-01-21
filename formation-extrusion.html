@@ -268,6 +268,9 @@
             </select>
             <button class="profile-btn" onclick="createProfile()">+ Nouveau</button>
             <button class="profile-btn danger" onclick="deleteProfile()">Supprimer</button>
+            <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
+            <button class="profile-btn" onclick="chooseFolder()" id="folderBtn">Dossier de sauvegarde</button>
+            <span id="folderStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
         </div>
 
         <div class="progress-overview">
@@ -574,6 +577,7 @@
         var signatureCanvases = {};
         var customLogo = null;
         var currentProfile = null;
+        var folderHandle = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             loadProfiles();
@@ -619,7 +623,7 @@
             document.getElementById('profileModal').classList.remove('show');
         }
 
-        function confirmCreateProfile() {
+        async function confirmCreateProfile() {
             var nom = document.getElementById('newProfileNom').value;
             var prenom = document.getElementById('newProfilePrenom').value;
 
@@ -634,9 +638,10 @@
 
             var profileId = Date.now().toString();
             var profileName = nom.trim() + ' ' + prenom.trim();
+            var fileName = profileName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.json';
 
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-            profiles.push({ id: profileId, name: profileName, progress: 0 });
+            profiles.push({ id: profileId, name: profileName, progress: 0, fileName: fileName });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
 
             // Initialiser les donnees du profil
@@ -652,6 +657,14 @@
 
             currentProfile = profileId;
             localStorage.setItem('gemef-last-profile', profileId);
+
+            // Sauvegarder dans le dossier si connecte
+            if (folderHandle) {
+                taskStatus = {};
+                taskHistory = {};
+                await saveProfileToFolder();
+            }
+
             closeProfileModal();
             location.reload();
         }
@@ -687,7 +700,12 @@
             document.getElementById('deleteModal').classList.remove('show');
         }
 
-        function confirmDeleteProfile() {
+        async function confirmDeleteProfile() {
+            // Supprimer du dossier si connecte
+            if (folderHandle) {
+                await deleteProfileFromFolder();
+            }
+
             // Supprimer les donnees du profil
             localStorage.removeItem(getProfileKey(currentProfile));
 
@@ -718,6 +736,173 @@
                 return p;
             });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+        }
+
+        // ===== GESTION DOSSIER SAUVEGARDE =====
+        async function chooseFolder() {
+            try {
+                // Verifier si l'API est supportee
+                if (!('showDirectoryPicker' in window)) {
+                    showAlert('Cette fonctionnalite n\'est disponible que sur Chrome ou Edge.', 'Navigateur non supporte', 'warning');
+                    return;
+                }
+
+                folderHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+                document.getElementById('folderStatus').textContent = 'Dossier: ' + folderHandle.name;
+                document.getElementById('folderBtn').textContent = 'Changer dossier';
+
+                // Charger les profils existants du dossier
+                await loadProfilesFromFolder();
+
+                showNotification('Dossier connecte: ' + folderHandle.name);
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Erreur selection dossier:', err);
+                }
+            }
+        }
+
+        async function loadProfilesFromFolder() {
+            if (!folderHandle) return;
+
+            try {
+                var profiles = [];
+
+                for await (var entry of folderHandle.values()) {
+                    if (entry.kind === 'file' && entry.name.endsWith('.json')) {
+                        try {
+                            var file = await entry.getFile();
+                            var content = await file.text();
+                            var data = JSON.parse(content);
+
+                            // Extraire les infos du profil
+                            var profileName = data.formInfo ?
+                                (data.formInfo.eleveNom || '') + ' ' + (data.formInfo.elevePrenom || '') :
+                                entry.name.replace('.json', '');
+
+                            // Calculer la progression
+                            var totalTasks = 0, acquiredCount = 0;
+                            if (data.taskStatus) {
+                                formationData.sections.forEach(function(section) {
+                                    section.tasks.forEach(function(_, index) {
+                                        totalTasks++;
+                                        if (data.taskStatus[section.id + '-' + index] === 'acquired') acquiredCount++;
+                                    });
+                                });
+                            }
+                            var progress = totalTasks > 0 ? Math.round((acquiredCount / totalTasks) * 100) : 0;
+
+                            profiles.push({
+                                id: entry.name.replace('.json', ''),
+                                name: profileName.trim() || entry.name.replace('.json', ''),
+                                progress: progress,
+                                fileName: entry.name
+                            });
+                        } catch (e) {
+                            console.warn('Erreur lecture fichier:', entry.name, e);
+                        }
+                    }
+                }
+
+                // Mettre a jour localStorage avec les profils du dossier
+                localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+                loadProfiles();
+
+                if (profiles.length > 0) {
+                    showAlert(profiles.length + ' profil(s) charge(s) depuis le dossier.', 'Profils charges', 'success');
+                }
+            } catch (err) {
+                console.error('Erreur chargement dossier:', err);
+            }
+        }
+
+        async function saveProfileToFolder() {
+            if (!folderHandle || !currentProfile) return;
+
+            try {
+                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                var profile = profiles.find(function(p) { return p.id === currentProfile; });
+                if (!profile) return;
+
+                // Creer le nom de fichier
+                var fileName = profile.fileName || (profile.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.json');
+
+                // Mettre a jour le fileName dans le profil
+                profile.fileName = fileName;
+                localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+
+                // Preparer les donnees
+                var signatures = {};
+                ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
+                    var canvas = document.getElementById(id);
+                    if (canvas) signatures[id] = canvas.toDataURL();
+                });
+
+                var data = {
+                    exportDate: new Date().toISOString(),
+                    version: '2.0',
+                    taskStatus: taskStatus,
+                    taskHistory: taskHistory,
+                    customLogo: customLogo,
+                    signatures: signatures,
+                    formInfo: {
+                        tuteurNom: document.getElementById('tuteurNom').value,
+                        tuteurPrenom: document.getElementById('tuteurPrenom').value,
+                        eleveNom: document.getElementById('eleveNom').value,
+                        elevePrenom: document.getElementById('elevePrenom').value,
+                        dateDebut: document.getElementById('dateDebut').value,
+                        dateFin: document.getElementById('dateFin').value,
+                        duree: document.getElementById('duree').value,
+                        comments: document.getElementById('comments').value,
+                        signatureTuteurDate: document.getElementById('signatureTuteurDate').value,
+                        signatureEleveDate: document.getElementById('signatureEleveDate').value,
+                        signatureChefDate: document.getElementById('signatureChefDate').value
+                    }
+                };
+
+                // Ecrire le fichier
+                var fileHandle = await folderHandle.getFileHandle(fileName, { create: true });
+                var writable = await fileHandle.createWritable();
+                await writable.write(JSON.stringify(data, null, 2));
+                await writable.close();
+
+                console.log('Sauvegarde fichier:', fileName);
+            } catch (err) {
+                console.error('Erreur sauvegarde fichier:', err);
+            }
+        }
+
+        async function loadProfileFromFolder(profileId) {
+            if (!folderHandle) return null;
+
+            try {
+                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                var profile = profiles.find(function(p) { return p.id === profileId; });
+                if (!profile || !profile.fileName) return null;
+
+                var fileHandle = await folderHandle.getFileHandle(profile.fileName);
+                var file = await fileHandle.getFile();
+                var content = await file.text();
+                return JSON.parse(content);
+            } catch (err) {
+                console.error('Erreur lecture profil:', err);
+                return null;
+            }
+        }
+
+        async function deleteProfileFromFolder() {
+            if (!folderHandle || !currentProfile) return;
+
+            try {
+                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                var profile = profiles.find(function(p) { return p.id === currentProfile; });
+                if (!profile || !profile.fileName) return;
+
+                await folderHandle.removeEntry(profile.fileName);
+                console.log('Fichier supprime:', profile.fileName);
+            } catch (err) {
+                console.error('Erreur suppression fichier:', err);
+            }
         }
 
         // ===== SIGNATURE CANVAS =====
@@ -1143,6 +1328,10 @@
             if (currentProfile) {
                 localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(data));
                 updateProfileProgress();
+                // Sauvegarder aussi dans le dossier si connecte
+                if (folderHandle) {
+                    saveProfileToFolder();
+                }
             }
         }
 
