@@ -23,15 +23,19 @@
         body { font-family: 'Barlow', Arial, Helvetica, sans-serif; background: var(--bg-main); color: var(--text-primary); line-height: 1.5; }
         .header { background: linear-gradient(135deg, var(--gemef-gray) 0%, #2C2C2C 100%); color: white; padding: 20px 30px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
         .logo-section { display: flex; align-items: center; gap: 20px; }
-        .logo { width: 70px; height: 70px; background: var(--gemef-orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', Arial, sans-serif; font-weight: 700; font-size: 28px; color: white; }
+        .logo { width: 70px; height: 70px; background: var(--gemef-orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', Arial, sans-serif; font-weight: 700; font-size: 28px; color: white; overflow: hidden; cursor: pointer; position: relative; }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        .logo-upload { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .header-title h1 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 28px; font-weight: 700; text-transform: uppercase; }
         .header-title p { font-size: 14px; opacity: 0.8; }
-        .header-actions { display: flex; gap: 12px; }
+        .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--gemef-orange); color: white; }
         .btn-primary:hover { background: var(--gemef-orange-dark); transform: translateY(-2px); }
         .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); }
         .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .btn-success { background: var(--status-acquired); color: white; }
+        .btn-success:hover { background: #219a52; }
         .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
         .progress-overview { background: var(--bg-card); border-radius: 12px; padding: 25px 30px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
         .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -39,7 +43,7 @@
         .progress-percentage { font-size: 36px; font-weight: 800; color: var(--gemef-orange); }
         .progress-bar-container { background: #E8E8E8; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, var(--gemef-orange) 0%, var(--status-acquired) 100%); border-radius: 6px; transition: width 0.5s ease; }
-        .progress-stats { display: flex; gap: 30px; }
+        .progress-stats { display: flex; gap: 30px; flex-wrap: wrap; }
         .stat { display: flex; align-items: center; gap: 10px; }
         .stat-dot { width: 14px; height: 14px; border-radius: 50%; }
         .stat-dot.pending { background: var(--status-pending); }
@@ -47,6 +51,17 @@
         .stat-dot.acquired { background: var(--status-acquired); }
         .stat-count { font-weight: 700; }
         .stat-label { color: var(--text-secondary); }
+
+        /* Filtres */
+        .filters-bar { background: var(--bg-card); border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .filters-label { font-weight: 600; color: var(--gemef-gray); }
+        .filter-btn { padding: 8px 16px; border: 2px solid var(--border-color); border-radius: 20px; background: white; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .filter-btn:hover { border-color: var(--gemef-orange); }
+        .filter-btn.active { background: var(--gemef-orange); color: white; border-color: var(--gemef-orange); }
+        .filter-btn.filter-pending.active { background: var(--status-pending); border-color: var(--status-pending); }
+        .filter-btn.filter-progress.active { background: var(--status-progress); border-color: var(--status-progress); }
+        .filter-btn.filter-acquired.active { background: var(--status-acquired); border-color: var(--status-acquired); }
+
         .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
         .info-card { background: var(--bg-card); border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
         .info-card h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 16px; font-weight: 600; color: var(--gemef-orange); text-transform: uppercase; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gemef-orange); }
@@ -56,6 +71,7 @@
         .info-value input { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; }
         .info-value input:focus { outline: none; border-color: var(--gemef-orange); }
         .section { background: var(--bg-card); border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); overflow: hidden; }
+        .section.hidden { display: none; }
         .section-header { background: linear-gradient(135deg, var(--gemef-gray) 0%, #3D3D3D 100%); color: white; padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .section-header:hover { background: linear-gradient(135deg, #3D3D3D 0%, var(--gemef-gray) 100%); }
         .section-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 18px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
@@ -67,11 +83,14 @@
         .toggle-icon { font-size: 20px; transition: transform 0.3s ease; }
         .section.collapsed .toggle-icon { transform: rotate(-90deg); }
         .section.collapsed .section-content { display: none; }
-        .task { display: flex; align-items: center; padding: 16px 25px; border-bottom: 1px solid var(--border-color); }
+        .task { display: flex; align-items: flex-start; padding: 16px 25px; border-bottom: 1px solid var(--border-color); flex-direction: column; gap: 8px; }
+        .task.hidden { display: none; }
         .task:last-child { border-bottom: none; }
         .task:hover { background: #FAFAFA; }
+        .task-main { display: flex; align-items: center; width: 100%; }
         .task-text { flex: 1; font-size: 14px; padding-right: 20px; }
         .task-status { display: flex; gap: 8px; }
+        .task-history { font-size: 11px; color: var(--text-secondary); padding-left: 5px; font-style: italic; }
         .status-btn { padding: 8px 16px; border: 2px solid transparent; border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
         .status-btn.pending { background: #FDEAEA; color: var(--status-pending); }
         .status-btn.pending.active { background: var(--status-pending); color: white; }
@@ -91,28 +110,59 @@
         .signature-field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
         .signature-field input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Barlow', Arial, sans-serif; font-size: 14px; text-align: center; }
         .signature-field input:focus { outline: none; border-color: var(--gemef-orange); }
+
+        /* Signature Canvas */
+        .signature-canvas-container { position: relative; margin-top: 10px; }
+        .signature-canvas { border: 2px dashed var(--border-color); border-radius: 8px; background: #FAFAFA; cursor: crosshair; touch-action: none; width: 100%; height: 100px; }
+        .signature-canvas:hover { border-color: var(--gemef-orange); }
+        .clear-signature { position: absolute; top: 5px; right: 5px; background: var(--status-pending); color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; }
+        .clear-signature:hover { background: #c0392b; }
+
         .footer { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px; }
         .notification { position: fixed; bottom: 30px; right: 30px; background: var(--status-acquired); color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1000; }
         .notification.show { transform: translateY(0); opacity: 1; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 20px; margin-bottom: 20px; color: var(--gemef-gray); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions .btn { flex: 1; justify-content: center; }
+
+        /* Hidden file input */
+        .hidden-input { display: none; }
+
         @media print {
             .header { position: static; background: white !important; color: black !important; box-shadow: none; border-bottom: 3px solid var(--gemef-orange); }
             .header-actions { display: none; }
+            .filters-bar { display: none; }
             .section.collapsed .section-content { display: block !important; }
+            .section.hidden { display: block !important; }
+            .task.hidden { display: flex !important; }
             .status-btn.active { border: 2px solid currentColor !important; }
+            .signature-canvas { border-style: solid; }
+            .clear-signature { display: none; }
         }
         @media (max-width: 768px) {
             .header { flex-direction: column; gap: 15px; text-align: center; }
+            .header-actions { justify-content: center; }
             .info-grid, .signatures-grid { grid-template-columns: 1fr; }
-            .task { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .task-main { flex-direction: column; align-items: flex-start; gap: 12px; }
             .task-status { width: 100%; justify-content: space-between; }
             .status-btn { flex: 1; padding: 10px 8px; font-size: 11px; }
+            .filters-bar { justify-content: center; }
         }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="logo-section">
-            <div class="logo">G</div>
+            <div class="logo" id="logoContainer" title="Cliquez pour changer le logo">
+                <span id="logoText">G</span>
+                <img id="logoImage" src="" alt="Logo" style="display: none;">
+                <input type="file" id="logoUpload" class="logo-upload" accept="image/*" onchange="handleLogoUpload(event)">
+            </div>
             <div class="header-title">
                 <h1>Formation Poste Extrusion</h1>
                 <p>GEMEF Industries - Fiche de suivi des competences</p>
@@ -121,7 +171,10 @@
         <div class="header-actions">
             <button class="btn btn-secondary" onclick="resetData()">&#8635; Reinitialiser</button>
             <button class="btn btn-secondary" onclick="expandAll()">&#8862; Tout deplier</button>
+            <button class="btn btn-secondary" onclick="showExportModal()">&#128229; Exporter</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">&#128228; Importer</button>
             <button class="btn btn-primary" onclick="exportPDF()">&#128196; Exporter PDF</button>
+            <input type="file" id="importFile" class="hidden-input" accept=".json" onchange="importData(event)">
         </div>
     </header>
     <div class="container">
@@ -139,6 +192,16 @@
                 <div class="stat"><div class="stat-dot acquired"></div><div class="stat-info"><span class="stat-count" id="acquiredCount">0</span><span class="stat-label"> Acquis</span></div></div>
             </div>
         </div>
+
+        <!-- Barre de filtres -->
+        <div class="filters-bar">
+            <span class="filters-label">Filtrer :</span>
+            <button class="filter-btn active" onclick="setFilter('all')">Tout afficher</button>
+            <button class="filter-btn filter-pending" onclick="setFilter('pending')">A acquerir</button>
+            <button class="filter-btn filter-progress" onclick="setFilter('progress')">En cours</button>
+            <button class="filter-btn filter-acquired" onclick="setFilter('acquired')">Acquis</button>
+        </div>
+
         <div class="info-grid">
             <div class="info-card">
                 <h3>Tuteur</h3>
@@ -170,24 +233,49 @@
             <div class="signature-card">
                 <h4>Tuteur</h4>
                 <div class="signature-field"><label>Date</label><input type="date" id="signatureTuteurDate"></div>
-                <div class="signature-field"><label>Signature</label><input type="text" id="signatureTuteur" placeholder="Signature"></div>
+                <div class="signature-canvas-container">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 5px;">Signature</label>
+                    <canvas id="signatureTuteur" class="signature-canvas"></canvas>
+                    <button class="clear-signature" onclick="clearSignature('signatureTuteur')">Effacer</button>
+                </div>
             </div>
             <div class="signature-card">
                 <h4>Eleve</h4>
                 <div class="signature-field"><label>Date</label><input type="date" id="signatureEleveDate"></div>
-                <div class="signature-field"><label>Signature</label><input type="text" id="signatureEleve" placeholder="Signature"></div>
+                <div class="signature-canvas-container">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 5px;">Signature</label>
+                    <canvas id="signatureEleve" class="signature-canvas"></canvas>
+                    <button class="clear-signature" onclick="clearSignature('signatureEleve')">Effacer</button>
+                </div>
             </div>
             <div class="signature-card">
                 <h4>Chef de poste</h4>
                 <div class="signature-field"><label>Date</label><input type="date" id="signatureChefDate"></div>
-                <div class="signature-field"><label>Signature</label><input type="text" id="signatureChef" placeholder="Signature"></div>
+                <div class="signature-canvas-container">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 5px;">Signature</label>
+                    <canvas id="signatureChef" class="signature-canvas"></canvas>
+                    <button class="clear-signature" onclick="clearSignature('signatureChef')">Effacer</button>
+                </div>
             </div>
         </div>
     </div>
     <footer class="footer">GEMEF Industries - Fiche de formation Conducteur Extrusion - <span id="currentDate"></span></footer>
     <div class="notification" id="notification">&#10003; Donnees sauvegardees</div>
+
+    <!-- Modal Export -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <h3>Exporter les donnees</h3>
+            <p style="margin-bottom: 15px; color: #666;">Telechargez un fichier JSON contenant toutes vos donnees. Vous pourrez le reimporter plus tard ou sur un autre appareil.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeExportModal()">Annuler</button>
+                <button class="btn btn-success" onclick="exportJSON()">Telecharger JSON</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const formationData = {
+        var formationData = {
             sections: [
                 { id: 1, title: "Securite / Prerequis / Controles prealables", tasks: [
                     "Presentation generale de l'atelier (personnel, fonctionnement)",
@@ -290,24 +378,312 @@
             ]
         };
 
-        let taskStatus = {};
+        var taskStatus = {};
+        var taskHistory = {};
+        var currentFilter = 'all';
+        var signatureCanvases = {};
+        var customLogo = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             renderSections();
             updateProgress();
             setupAutoSave();
+            initSignatureCanvases();
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR');
         });
 
+        // ===== SIGNATURE CANVAS =====
+        function initSignatureCanvases() {
+            var canvasIds = ['signatureTuteur', 'signatureEleve', 'signatureChef'];
+            canvasIds.forEach(function(id) {
+                var canvas = document.getElementById(id);
+                var ctx = canvas.getContext('2d');
+
+                // Set canvas size
+                var rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+
+                signatureCanvases[id] = {
+                    canvas: canvas,
+                    ctx: ctx,
+                    drawing: false,
+                    lastX: 0,
+                    lastY: 0
+                };
+
+                // Load saved signature if exists
+                var saved = localStorage.getItem('gemef-formation-extrusion');
+                if (saved) {
+                    var data = JSON.parse(saved);
+                    if (data.signatures && data.signatures[id]) {
+                        var img = new Image();
+                        img.onload = function() {
+                            ctx.drawImage(img, 0, 0);
+                        };
+                        img.src = data.signatures[id];
+                    }
+                }
+
+                // Mouse events
+                canvas.addEventListener('mousedown', function(e) { startDrawing(id, e); });
+                canvas.addEventListener('mousemove', function(e) { draw(id, e); });
+                canvas.addEventListener('mouseup', function() { stopDrawing(id); });
+                canvas.addEventListener('mouseout', function() { stopDrawing(id); });
+
+                // Touch events
+                canvas.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    var touch = e.touches[0];
+                    startDrawing(id, touch);
+                });
+                canvas.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    var touch = e.touches[0];
+                    draw(id, touch);
+                });
+                canvas.addEventListener('touchend', function() { stopDrawing(id); });
+            });
+        }
+
+        function getCanvasCoords(id, e) {
+            var canvas = signatureCanvases[id].canvas;
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                y: (e.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function startDrawing(id, e) {
+            var sig = signatureCanvases[id];
+            sig.drawing = true;
+            var coords = getCanvasCoords(id, e);
+            sig.lastX = coords.x;
+            sig.lastY = coords.y;
+        }
+
+        function draw(id, e) {
+            var sig = signatureCanvases[id];
+            if (!sig.drawing) return;
+
+            var coords = getCanvasCoords(id, e);
+            sig.ctx.beginPath();
+            sig.ctx.moveTo(sig.lastX, sig.lastY);
+            sig.ctx.lineTo(coords.x, coords.y);
+            sig.ctx.strokeStyle = '#2C2C2C';
+            sig.ctx.lineWidth = 2;
+            sig.ctx.lineCap = 'round';
+            sig.ctx.stroke();
+
+            sig.lastX = coords.x;
+            sig.lastY = coords.y;
+        }
+
+        function stopDrawing(id) {
+            var sig = signatureCanvases[id];
+            if (sig.drawing) {
+                sig.drawing = false;
+                saveData();
+            }
+        }
+
+        function clearSignature(id) {
+            var sig = signatureCanvases[id];
+            sig.ctx.clearRect(0, 0, sig.canvas.width, sig.canvas.height);
+            saveData();
+            showNotification('Signature effacee');
+        }
+
+        // ===== LOGO UPLOAD =====
+        function handleLogoUpload(event) {
+            var file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    customLogo = e.target.result;
+                    document.getElementById('logoText').style.display = 'none';
+                    var logoImg = document.getElementById('logoImage');
+                    logoImg.src = customLogo;
+                    logoImg.style.display = 'block';
+                    saveData();
+                    showNotification('Logo mis a jour');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ===== FILTERS =====
+        function setFilter(filter) {
+            currentFilter = filter;
+
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Apply filter
+            applyFilter();
+        }
+
+        function applyFilter() {
+            formationData.sections.forEach(function(section) {
+                var sectionEl = document.getElementById('section-' + section.id);
+                var tasks = sectionEl.querySelectorAll('.task');
+                var visibleTasks = 0;
+
+                tasks.forEach(function(taskEl, index) {
+                    var status = getTaskStatus(section.id, index);
+                    if (currentFilter === 'all' || status === currentFilter) {
+                        taskEl.classList.remove('hidden');
+                        visibleTasks++;
+                    } else {
+                        taskEl.classList.add('hidden');
+                    }
+                });
+
+                // Hide section if no visible tasks
+                if (visibleTasks === 0 && currentFilter !== 'all') {
+                    sectionEl.classList.add('hidden');
+                } else {
+                    sectionEl.classList.remove('hidden');
+                }
+            });
+        }
+
+        // ===== EXPORT/IMPORT =====
+        function showExportModal() {
+            document.getElementById('exportModal').classList.add('show');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('show');
+        }
+
+        function exportJSON() {
+            var signatures = {};
+            ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
+                var canvas = document.getElementById(id);
+                signatures[id] = canvas.toDataURL();
+            });
+
+            var data = {
+                exportDate: new Date().toISOString(),
+                version: '2.0',
+                taskStatus: taskStatus,
+                taskHistory: taskHistory,
+                customLogo: customLogo,
+                signatures: signatures,
+                formInfo: {
+                    tuteurNom: document.getElementById('tuteurNom').value,
+                    tuteurPrenom: document.getElementById('tuteurPrenom').value,
+                    eleveNom: document.getElementById('eleveNom').value,
+                    elevePrenom: document.getElementById('elevePrenom').value,
+                    dateDebut: document.getElementById('dateDebut').value,
+                    dateFin: document.getElementById('dateFin').value,
+                    duree: document.getElementById('duree').value,
+                    comments: document.getElementById('comments').value,
+                    signatureTuteurDate: document.getElementById('signatureTuteurDate').value,
+                    signatureEleveDate: document.getElementById('signatureEleveDate').value,
+                    signatureChefDate: document.getElementById('signatureChefDate').value
+                }
+            };
+
+            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            var filename = 'formation-extrusion';
+            if (data.formInfo.eleveNom) {
+                filename += '-' + data.formInfo.eleveNom.toLowerCase().replace(/\s+/g, '-');
+            }
+            filename += '-' + new Date().toISOString().split('T')[0] + '.json';
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            closeExportModal();
+            showNotification('Donnees exportees');
+        }
+
+        function importData(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = JSON.parse(e.target.result);
+
+                    // Restore task status and history
+                    taskStatus = data.taskStatus || {};
+                    taskHistory = data.taskHistory || {};
+
+                    // Restore custom logo
+                    if (data.customLogo) {
+                        customLogo = data.customLogo;
+                        document.getElementById('logoText').style.display = 'none';
+                        var logoImg = document.getElementById('logoImage');
+                        logoImg.src = customLogo;
+                        logoImg.style.display = 'block';
+                    }
+
+                    // Restore form info
+                    if (data.formInfo) {
+                        document.getElementById('tuteurNom').value = data.formInfo.tuteurNom || '';
+                        document.getElementById('tuteurPrenom').value = data.formInfo.tuteurPrenom || '';
+                        document.getElementById('eleveNom').value = data.formInfo.eleveNom || '';
+                        document.getElementById('elevePrenom').value = data.formInfo.elevePrenom || '';
+                        document.getElementById('dateDebut').value = data.formInfo.dateDebut || '';
+                        document.getElementById('dateFin').value = data.formInfo.dateFin || '';
+                        document.getElementById('duree').value = data.formInfo.duree || '';
+                        document.getElementById('comments').value = data.formInfo.comments || '';
+                        document.getElementById('signatureTuteurDate').value = data.formInfo.signatureTuteurDate || '';
+                        document.getElementById('signatureEleveDate').value = data.formInfo.signatureEleveDate || '';
+                        document.getElementById('signatureChefDate').value = data.formInfo.signatureChefDate || '';
+                    }
+
+                    // Restore signatures
+                    if (data.signatures) {
+                        ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
+                            if (data.signatures[id]) {
+                                var canvas = document.getElementById(id);
+                                var ctx = canvas.getContext('2d');
+                                var img = new Image();
+                                img.onload = function() {
+                                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                    ctx.drawImage(img, 0, 0);
+                                };
+                                img.src = data.signatures[id];
+                            }
+                        });
+                    }
+
+                    renderSections();
+                    updateProgress();
+                    saveData();
+                    showNotification('Donnees importees avec succes');
+                } catch (err) {
+                    alert('Erreur lors de l\'import du fichier. Verifiez que c\'est un fichier JSON valide.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ===== RENDER SECTIONS =====
         function renderSections() {
-            const container = document.getElementById('sectionsContainer');
+            var container = document.getElementById('sectionsContainer');
             container.innerHTML = '';
-            formationData.sections.forEach(section => {
-                const sectionEl = document.createElement('div');
+            formationData.sections.forEach(function(section) {
+                var sectionEl = document.createElement('div');
                 sectionEl.className = 'section';
                 sectionEl.id = 'section-' + section.id;
-                const sectionProgress = calculateSectionProgress(section.id);
+                var sectionProgress = calculateSectionProgress(section.id);
                 sectionEl.innerHTML =
                     '<div class="section-header" onclick="toggleSection(' + section.id + ')">' +
                         '<div class="section-title"><span class="section-number">' + section.id + '</span>' + section.title + '</div>' +
@@ -319,35 +695,62 @@
                     '</div>' +
                     '<div class="section-content">' +
                         section.tasks.map(function(task, index) {
+                            var history = getTaskHistory(section.id, index);
+                            var historyHtml = history ? '<div class="task-history">Modifie le ' + history + '</div>' : '';
                             return '<div class="task">' +
-                                '<div class="task-text">' + task + '</div>' +
-                                '<div class="task-status">' +
-                                    '<button class="status-btn pending ' + (getTaskStatus(section.id, index) === 'pending' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'pending\')">A acquerir</button>' +
-                                    '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>' +
-                                    '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired\')">Acquis</button>' +
+                                '<div class="task-main">' +
+                                    '<div class="task-text">' + task + '</div>' +
+                                    '<div class="task-status">' +
+                                        '<button class="status-btn pending ' + (getTaskStatus(section.id, index) === 'pending' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'pending\')">A acquerir</button>' +
+                                        '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>' +
+                                        '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired\')">Acquis</button>' +
+                                    '</div>' +
                                 '</div>' +
+                                historyHtml +
                             '</div>';
                         }).join('') +
                     '</div>';
                 container.appendChild(sectionEl);
             });
+            applyFilter();
         }
 
         function toggleSection(sectionId) { document.getElementById('section-' + sectionId).classList.toggle('collapsed'); }
         function expandAll() { document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('collapsed'); }); }
         function getTaskStatus(sectionId, taskIndex) { return taskStatus[sectionId + '-' + taskIndex] || 'pending'; }
+        function getTaskHistory(sectionId, taskIndex) { return taskHistory[sectionId + '-' + taskIndex] || ''; }
 
         function setStatus(sectionId, taskIndex, status) {
-            taskStatus[sectionId + '-' + taskIndex] = status;
-            var section = document.getElementById('section-' + sectionId);
-            var taskEl = section.querySelectorAll('.task')[taskIndex];
-            taskEl.querySelectorAll('.status-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.classList.contains(status)) btn.classList.add('active');
-            });
-            updateProgress();
-            saveData();
-            showNotification();
+            var key = sectionId + '-' + taskIndex;
+            var oldStatus = taskStatus[key] || 'pending';
+
+            if (oldStatus !== status) {
+                taskStatus[key] = status;
+                taskHistory[key] = new Date().toLocaleDateString('fr-FR') + ' a ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+
+                var section = document.getElementById('section-' + sectionId);
+                var taskEl = section.querySelectorAll('.task')[taskIndex];
+                taskEl.querySelectorAll('.status-btn').forEach(function(btn) {
+                    btn.classList.remove('active');
+                    if (btn.classList.contains(status)) btn.classList.add('active');
+                });
+
+                // Update history display
+                var historyEl = taskEl.querySelector('.task-history');
+                if (historyEl) {
+                    historyEl.textContent = 'Modifie le ' + taskHistory[key];
+                } else {
+                    var historyDiv = document.createElement('div');
+                    historyDiv.className = 'task-history';
+                    historyDiv.textContent = 'Modifie le ' + taskHistory[key];
+                    taskEl.appendChild(historyDiv);
+                }
+
+                updateProgress();
+                saveData();
+                showNotification();
+                applyFilter();
+            }
         }
 
         function calculateSectionProgress(sectionId) {
@@ -383,8 +786,19 @@
         }
 
         function saveData() {
+            var signatures = {};
+            ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
+                var canvas = document.getElementById(id);
+                if (canvas) {
+                    signatures[id] = canvas.toDataURL();
+                }
+            });
+
             var data = {
                 taskStatus: taskStatus,
+                taskHistory: taskHistory,
+                customLogo: customLogo,
+                signatures: signatures,
                 formInfo: {
                     tuteurNom: document.getElementById('tuteurNom').value,
                     tuteurPrenom: document.getElementById('tuteurPrenom').value,
@@ -395,11 +809,8 @@
                     duree: document.getElementById('duree').value,
                     comments: document.getElementById('comments').value,
                     signatureTuteurDate: document.getElementById('signatureTuteurDate').value,
-                    signatureTuteur: document.getElementById('signatureTuteur').value,
                     signatureEleveDate: document.getElementById('signatureEleveDate').value,
-                    signatureEleve: document.getElementById('signatureEleve').value,
-                    signatureChefDate: document.getElementById('signatureChefDate').value,
-                    signatureChef: document.getElementById('signatureChef').value
+                    signatureChefDate: document.getElementById('signatureChefDate').value
                 }
             };
             localStorage.setItem('gemef-formation-extrusion', JSON.stringify(data));
@@ -410,6 +821,17 @@
             if (saved) {
                 var data = JSON.parse(saved);
                 taskStatus = data.taskStatus || {};
+                taskHistory = data.taskHistory || {};
+                customLogo = data.customLogo || null;
+
+                // Load custom logo
+                if (customLogo) {
+                    document.getElementById('logoText').style.display = 'none';
+                    var logoImg = document.getElementById('logoImage');
+                    logoImg.src = customLogo;
+                    logoImg.style.display = 'block';
+                }
+
                 if (data.formInfo) {
                     document.getElementById('tuteurNom').value = data.formInfo.tuteurNom || '';
                     document.getElementById('tuteurPrenom').value = data.formInfo.tuteurPrenom || '';
@@ -420,11 +842,8 @@
                     document.getElementById('duree').value = data.formInfo.duree || '';
                     document.getElementById('comments').value = data.formInfo.comments || '';
                     document.getElementById('signatureTuteurDate').value = data.formInfo.signatureTuteurDate || '';
-                    document.getElementById('signatureTuteur').value = data.formInfo.signatureTuteur || '';
                     document.getElementById('signatureEleveDate').value = data.formInfo.signatureEleveDate || '';
-                    document.getElementById('signatureEleve').value = data.formInfo.signatureEleve || '';
                     document.getElementById('signatureChefDate').value = data.formInfo.signatureChefDate || '';
-                    document.getElementById('signatureChef').value = data.formInfo.signatureChef || '';
                 }
             }
         }
@@ -435,8 +854,9 @@
             });
         }
 
-        function showNotification() {
+        function showNotification(message) {
             var notif = document.getElementById('notification');
+            notif.innerHTML = '&#10003; ' + (message || 'Donnees sauvegardees');
             notif.classList.add('show');
             setTimeout(function() { notif.classList.remove('show'); }, 2000);
         }
@@ -445,14 +865,37 @@
             if (confirm('Etes-vous sur de vouloir reinitialiser toutes les donnees ? Cette action est irreversible.')) {
                 localStorage.removeItem('gemef-formation-extrusion');
                 taskStatus = {};
-                document.querySelectorAll('input, textarea').forEach(function(el) { if (el.id !== 'poste') el.value = ''; });
+                taskHistory = {};
+                customLogo = null;
+
+                // Reset logo
+                document.getElementById('logoText').style.display = 'block';
+                document.getElementById('logoImage').style.display = 'none';
+
+                // Reset form fields
+                document.querySelectorAll('input, textarea').forEach(function(el) {
+                    if (el.id !== 'poste' && el.type !== 'file') el.value = '';
+                });
+
+                // Clear signatures
+                ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
+                    var canvas = document.getElementById(id);
+                    var ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                });
+
                 renderSections();
                 updateProgress();
+                currentFilter = 'all';
+                document.querySelectorAll('.filter-btn').forEach(function(btn) { btn.classList.remove('active'); });
+                document.querySelector('.filter-btn').classList.add('active');
             }
         }
 
         function exportPDF() {
             expandAll();
+            currentFilter = 'all';
+            applyFilter();
             setTimeout(function() { window.print(); }, 300);
         }
     </script>
