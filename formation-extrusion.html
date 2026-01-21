@@ -141,12 +141,22 @@
         .notification.show { transform: translateY(0); opacity: 1; }
 
         /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
-        .modal { background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .modal h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 20px; margin-bottom: 20px; color: var(--gemef-gray); }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-actions .btn { flex: 1; justify-content: center; }
+        .modal { background: white; border-radius: 16px; padding: 0; max-width: 450px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-header { background: linear-gradient(135deg, var(--gemef-orange) 0%, var(--gemef-orange-dark) 100%); color: white; padding: 20px 25px; border-radius: 16px 16px 0 0; }
+        .modal-header h3 { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 22px; margin: 0; text-transform: uppercase; }
+        .modal-header p { font-size: 13px; opacity: 0.9; margin-top: 5px; }
+        .modal-body { padding: 25px; }
+        .modal-field { margin-bottom: 20px; }
+        .modal-field label { display: block; font-weight: 600; color: var(--gemef-gray); margin-bottom: 8px; font-size: 14px; }
+        .modal-field input { width: 100%; padding: 14px 16px; border: 2px solid var(--border-color); border-radius: 10px; font-family: 'Barlow', Arial, sans-serif; font-size: 16px; transition: all 0.2s ease; }
+        .modal-field input:focus { outline: none; border-color: var(--gemef-orange); box-shadow: 0 0 0 4px rgba(232, 119, 34, 0.15); }
+        .modal-field input::placeholder { color: #aaa; }
+        .modal-actions { display: flex; gap: 12px; padding: 0 25px 25px 25px; }
+        .modal-actions .btn { flex: 1; justify-content: center; padding: 14px 20px; font-size: 15px; border-radius: 10px; }
+        .modal-actions .btn-cancel { background: #f0f0f0; color: var(--gemef-gray); border: none; }
+        .modal-actions .btn-cancel:hover { background: #e0e0e0; }
 
         /* Hidden file input */
         .hidden-input { display: none; }
@@ -291,11 +301,91 @@
     <!-- Modal Export -->
     <div class="modal-overlay" id="exportModal">
         <div class="modal">
-            <h3>Exporter les donnees</h3>
-            <p style="margin-bottom: 15px; color: #666;">Telechargez un fichier JSON contenant toutes vos donnees. Vous pourrez le reimporter plus tard ou sur un autre appareil.</p>
+            <div class="modal-header">
+                <h3>Exporter les donnees</h3>
+                <p>Sauvegardez vos donnees en fichier JSON</p>
+            </div>
+            <div class="modal-body">
+                <p style="color: #666;">Telechargez un fichier JSON contenant toutes vos donnees. Vous pourrez le reimporter plus tard ou sur un autre appareil.</p>
+            </div>
             <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeExportModal()">Annuler</button>
+                <button class="btn btn-cancel" onclick="closeExportModal()">Annuler</button>
                 <button class="btn btn-success" onclick="exportJSON()">Telecharger JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nouveau Profil -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nouveau Profil</h3>
+                <p>Creer un nouveau salarie en formation</p>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label for="newProfileNom">Nom du salarie</label>
+                    <input type="text" id="newProfileNom" placeholder="Entrez le nom de famille" autocomplete="off">
+                </div>
+                <div class="modal-field">
+                    <label for="newProfilePrenom">Prenom du salarie</label>
+                    <input type="text" id="newProfilePrenom" placeholder="Entrez le prenom" autocomplete="off">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeProfileModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="confirmCreateProfile()">Creer le profil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation Suppression -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-header" style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);">
+                <h3>Supprimer le profil</h3>
+                <p>Cette action est irreversible</p>
+            </div>
+            <div class="modal-body">
+                <p style="color: #666;">Etes-vous sur de vouloir supprimer le profil <strong id="deleteProfileName"></strong> ?</p>
+                <p style="color: #E74C3C; font-size: 13px; margin-top: 10px;">Toutes les donnees de formation seront perdues.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Annuler</button>
+                <button class="btn" style="background: #E74C3C; color: white;" onclick="confirmDeleteProfile()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation Reinitialisation -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <div class="modal-header" style="background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);">
+                <h3>Reinitialiser le profil</h3>
+                <p>Remettre toutes les competences a zero</p>
+            </div>
+            <div class="modal-body">
+                <p style="color: #666;">Etes-vous sur de vouloir reinitialiser le profil <strong id="resetProfileName"></strong> ?</p>
+                <p style="color: #F39C12; font-size: 13px; margin-top: 10px;">Toutes les competences seront remises a "A acquerir".</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeResetModal()">Annuler</button>
+                <button class="btn" style="background: #F39C12; color: white;" onclick="confirmResetProfile()">Reinitialiser</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alerte -->
+    <div class="modal-overlay" id="alertModal">
+        <div class="modal">
+            <div class="modal-header" id="alertModalHeader">
+                <h3 id="alertModalTitle">Information</h3>
+            </div>
+            <div class="modal-body">
+                <p id="alertModalMessage" style="color: #666;"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeAlertModal()" style="flex: none; min-width: 120px;">OK</button>
             </div>
         </div>
     </div>
@@ -445,11 +535,28 @@
         }
 
         function createProfile() {
-            var nom = prompt('Nom du salarie en formation:');
-            if (!nom || nom.trim() === '') return;
+            document.getElementById('newProfileNom').value = '';
+            document.getElementById('newProfilePrenom').value = '';
+            document.getElementById('profileModal').classList.add('show');
+            document.getElementById('newProfileNom').focus();
+        }
 
-            var prenom = prompt('Prenom:');
-            if (!prenom || prenom.trim() === '') return;
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        function confirmCreateProfile() {
+            var nom = document.getElementById('newProfileNom').value;
+            var prenom = document.getElementById('newProfilePrenom').value;
+
+            if (!nom || nom.trim() === '') {
+                showAlert('Veuillez entrer le nom du salarie', 'Champ requis', 'warning');
+                return;
+            }
+            if (!prenom || prenom.trim() === '') {
+                showAlert('Veuillez entrer le prenom du salarie', 'Champ requis', 'warning');
+                return;
+            }
 
             var profileId = Date.now().toString();
             var profileName = nom.trim() + ' ' + prenom.trim();
@@ -471,8 +578,7 @@
 
             currentProfile = profileId;
             localStorage.setItem('gemef-last-profile', profileId);
-            loadProfiles();
-            document.getElementById('profileSelect').value = profileId;
+            closeProfileModal();
             location.reload();
         }
 
@@ -492,24 +598,33 @@
 
         function deleteProfile() {
             if (!currentProfile) {
-                alert('Aucun profil selectionne');
+                showAlert('Veuillez d\'abord selectionner un profil', 'Aucun profil', 'warning');
                 return;
             }
 
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var profile = profiles.find(function(p) { return p.id === currentProfile; });
 
-            if (!confirm('Supprimer le profil "' + profile.name + '" ? Cette action est irreversible.')) return;
+            document.getElementById('deleteProfileName').textContent = profile.name;
+            document.getElementById('deleteModal').classList.add('show');
+        }
 
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function confirmDeleteProfile() {
             // Supprimer les donnees du profil
             localStorage.removeItem(getProfileKey(currentProfile));
 
             // Retirer de la liste
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             profiles = profiles.filter(function(p) { return p.id !== currentProfile; });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
 
             currentProfile = null;
             localStorage.removeItem('gemef-last-profile');
+            closeDeleteModal();
             location.reload();
         }
 
@@ -807,7 +922,7 @@
                     saveData();
                     showNotification('Donnees importees avec succes');
                 } catch (err) {
-                    alert('Erreur lors de l\'import du fichier. Verifiez que c\'est un fichier JSON valide.');
+                    showAlert('Verifiez que c\'est un fichier JSON valide.', 'Erreur d\'import', 'error');
                 }
             };
             reader.readAsText(file);
@@ -1003,32 +1118,69 @@
             setTimeout(function() { notif.classList.remove('show'); }, 2000);
         }
 
+        // ===== MODAL ALERT =====
+        function showAlert(message, title, type) {
+            var header = document.getElementById('alertModalHeader');
+            var titleEl = document.getElementById('alertModalTitle');
+            var messageEl = document.getElementById('alertModalMessage');
+
+            titleEl.textContent = title || 'Information';
+            messageEl.textContent = message;
+
+            // Style selon le type
+            if (type === 'error') {
+                header.style.background = 'linear-gradient(135deg, #E74C3C 0%, #C0392B 100%)';
+            } else if (type === 'warning') {
+                header.style.background = 'linear-gradient(135deg, #F39C12 0%, #E67E22 100%)';
+            } else if (type === 'success') {
+                header.style.background = 'linear-gradient(135deg, #27AE60 0%, #219a52 100%)';
+            } else {
+                header.style.background = 'linear-gradient(135deg, var(--gemef-orange) 0%, var(--gemef-orange-dark) 100%)';
+            }
+
+            document.getElementById('alertModal').classList.add('show');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('alertModal').classList.remove('show');
+        }
+
         function resetData() {
             if (!currentProfile) {
-                alert('Aucun profil selectionne');
+                showAlert('Veuillez d\'abord selectionner un profil', 'Aucun profil', 'warning');
                 return;
             }
-            if (confirm('Etes-vous sur de vouloir reinitialiser ce profil ? Cette action est irreversible.')) {
-                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-                var profile = profiles.find(function(p) { return p.id === currentProfile; });
-                // Reinitialiser les donnees mais garder le nom
-                var initialData = {
-                    taskStatus: {},
-                    taskHistory: {},
-                    formInfo: {
-                        eleveNom: profile ? profile.name.split(' ')[0] : '',
-                        elevePrenom: profile ? profile.name.split(' ').slice(1).join(' ') : ''
-                    }
-                };
-                localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(initialData));
-                // Mettre a jour le progress a 0
-                profiles = profiles.map(function(p) {
-                    if (p.id === currentProfile) p.progress = 0;
-                    return p;
-                });
-                localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
-                location.reload();
-            }
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var profile = profiles.find(function(p) { return p.id === currentProfile; });
+            document.getElementById('resetProfileName').textContent = profile.name;
+            document.getElementById('resetModal').classList.add('show');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('show');
+        }
+
+        function confirmResetProfile() {
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var profile = profiles.find(function(p) { return p.id === currentProfile; });
+            // Reinitialiser les donnees mais garder le nom
+            var initialData = {
+                taskStatus: {},
+                taskHistory: {},
+                formInfo: {
+                    eleveNom: profile ? profile.name.split(' ')[0] : '',
+                    elevePrenom: profile ? profile.name.split(' ').slice(1).join(' ') : ''
+                }
+            };
+            localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(initialData));
+            // Mettre a jour le progress a 0
+            profiles = profiles.map(function(p) {
+                if (p.id === currentProfile) p.progress = 0;
+                return p;
+            });
+            localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+            closeResetModal();
+            location.reload();
         }
 
         function exportPDF() {
