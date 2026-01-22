@@ -320,8 +320,8 @@
             <button class="profile-btn" onclick="createProfile()">+ Nouveau</button>
             <button class="profile-btn danger" onclick="deleteProfile()">Supprimer</button>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
-            <button class="profile-btn" onclick="chooseFolder()" id="folderBtn">Dossier de sauvegarde</button>
-            <span id="folderStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
+            <button class="profile-btn" onclick="showMongoConfig()" id="mongoBtn">&#9729; Cloud Sync</button>
+            <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
         </div>
 
         <div class="progress-overview">
@@ -496,6 +496,42 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-primary" onclick="closeAlertModal()" style="flex: none; min-width: 120px;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MongoDB Config -->
+    <div class="modal-overlay" id="mongoModal">
+        <div class="modal">
+            <div class="modal-header" style="background: linear-gradient(135deg, #4DB33D 0%, #3FA037 100%);">
+                <h3>&#9729; Configuration Cloud</h3>
+                <p>Synchronisation MongoDB Atlas</p>
+            </div>
+            <div class="modal-body">
+                <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Connectez-vous a MongoDB Atlas pour synchroniser les profils entre tous les utilisateurs.</p>
+                <div class="modal-field">
+                    <label for="mongoEndpoint">Data API Endpoint</label>
+                    <input type="text" id="mongoEndpoint" placeholder="https://data.mongodb-api.com/app/..." autocomplete="off">
+                </div>
+                <div class="modal-field">
+                    <label for="mongoApiKey">API Key</label>
+                    <input type="password" id="mongoApiKey" placeholder="Votre cle API" autocomplete="off">
+                </div>
+                <div class="modal-field">
+                    <label for="mongoDatabase">Database</label>
+                    <input type="text" id="mongoDatabase" placeholder="gemef_formation" value="gemef_formation" autocomplete="off">
+                </div>
+                <div class="modal-field">
+                    <label for="mongoCollection">Collection</label>
+                    <input type="text" id="mongoCollection" placeholder="profiles" value="profiles" autocomplete="off">
+                </div>
+                <p style="color: #888; font-size: 11px; margin-top: 10px;">
+                    <a href="https://www.mongodb.com/atlas" target="_blank" style="color: #4DB33D;">Creer un compte MongoDB Atlas gratuit</a>
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeMongoModal()">Annuler</button>
+                <button class="btn" style="background: #4DB33D; color: white;" onclick="connectMongoDB()">Connecter</button>
             </div>
         </div>
     </div>
