@@ -820,15 +820,18 @@
         function updateProfileProgress() {
             if (!currentProfile) return;
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-            var totalTasks = 0, acquiredCount = 0;
+            var totalTasks = 0, totalPercent = 0;
             formationData.sections.forEach(function(section) {
                 section.tasks.forEach(function(_, index) {
                     totalTasks++;
                     var status = taskStatus[section.id + '-' + index] || '';
-                    if (status.startsWith('acquired')) acquiredCount++;
+                    if (status.startsWith('acquired')) {
+                        var level = parseInt(status.split('-')[1]) || 1;
+                        totalPercent += level * 20;
+                    }
                 });
             });
-            var progress = Math.round((acquiredCount / totalTasks) * 100);
+            var progress = Math.round(totalPercent / totalTasks);
             profiles = profiles.map(function(p) {
                 if (p.id === currentProfile) p.progress = progress;
                 return p;
@@ -1416,26 +1419,36 @@
             applyFilter();
         }
 
+        function getAcquisPercentage(status) {
+            if (!status || !status.startsWith('acquired')) return 0;
+            var level = parseInt(status.split('-')[1]) || 1;
+            return level * 20; // 1=20%, 2=40%, 3=60%, 4=80%, 5=100%
+        }
+
         function calculateSectionProgress(sectionId) {
             var section = formationData.sections.find(function(s) { return s.id === sectionId; });
             if (!section) return 0;
-            var acquired = 0;
+            var totalPercent = 0;
             section.tasks.forEach(function(_, index) {
                 var status = getTaskStatus(sectionId, index);
-                if (status.startsWith('acquired')) acquired++;
+                totalPercent += getAcquisPercentage(status);
             });
-            return Math.round((acquired / section.tasks.length) * 100);
+            return Math.round(totalPercent / section.tasks.length);
         }
 
         function updateProgress() {
             var totalTasks = 0, pendingCount = 0, progressCount = 0, acquiredCount = 0;
+            var totalPercent = 0;
             formationData.sections.forEach(function(section) {
                 section.tasks.forEach(function(_, index) {
                     totalTasks++;
                     var status = getTaskStatus(section.id, index);
                     if (status === 'pending') pendingCount++;
                     else if (status === 'progress') progressCount++;
-                    else if (status.startsWith('acquired')) acquiredCount++;
+                    else if (status.startsWith('acquired')) {
+                        acquiredCount++;
+                        totalPercent += getAcquisPercentage(status);
+                    }
                 });
                 var sectionProgress = calculateSectionProgress(section.id);
                 var fillEl = document.getElementById('progress-fill-' + section.id);
@@ -1443,7 +1456,7 @@
                 if (fillEl) fillEl.style.width = sectionProgress + '%';
                 if (textEl) textEl.textContent = sectionProgress + '%';
             });
-            var globalProgress = Math.round((acquiredCount / totalTasks) * 100);
+            var globalProgress = Math.round(totalPercent / totalTasks);
             document.getElementById('globalPercentage').textContent = globalProgress + '%';
             document.getElementById('globalProgressBar').style.width = globalProgress + '%';
             document.getElementById('pendingCount').textContent = pendingCount;
