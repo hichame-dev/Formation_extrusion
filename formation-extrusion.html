@@ -117,6 +117,13 @@
         .status-btn.acquired { background: #E8F6EF; color: var(--status-acquired); }
         .status-btn.acquired.active { background: var(--status-acquired); color: white; }
         .status-btn:hover { transform: scale(1.05); }
+
+        /* Menu deroulant Acquis */
+        .acquis-select { padding: 8px 12px; border: 2px solid var(--status-acquired); border-radius: 6px; font-family: 'Roboto', Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; background: #E8F6EF; color: var(--status-acquired); text-transform: uppercase; transition: all 0.2s ease; min-width: 120px; }
+        .acquis-select:hover { transform: scale(1.05); }
+        .acquis-select.active { background: var(--status-acquired); color: white; }
+        .acquis-select:focus { outline: none; box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.3); }
+        .acquis-select option { background: white; color: var(--text-primary); font-weight: 500; }
         .comments-section { background: var(--bg-card); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
         .comments-section h3 { font-family: 'Montserrat', Arial, sans-serif; font-size: 18px; font-weight: 600; color: var(--gemef-gray); text-transform: uppercase; margin-bottom: 15px; }
         .comments-section textarea { width: 100%; min-height: 120px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Roboto', Arial, sans-serif; font-size: 14px; resize: vertical; }
@@ -771,7 +778,8 @@
             formationData.sections.forEach(function(section) {
                 section.tasks.forEach(function(_, index) {
                     totalTasks++;
-                    if (taskStatus[section.id + '-' + index] === 'acquired') acquiredCount++;
+                    var status = taskStatus[section.id + '-' + index] || '';
+                    if (status.startsWith('acquired')) acquiredCount++;
                 });
             });
             var progress = Math.round((acquiredCount / totalTasks) * 100);
@@ -830,7 +838,8 @@
                                 formationData.sections.forEach(function(section) {
                                     section.tasks.forEach(function(_, index) {
                                         totalTasks++;
-                                        if (data.taskStatus[section.id + '-' + index] === 'acquired') acquiredCount++;
+                                        var status = data.taskStatus[section.id + '-' + index] || '';
+                                        if (status.startsWith('acquired')) acquiredCount++;
                                     });
                                 });
                             }
@@ -1093,7 +1102,10 @@
 
                 tasks.forEach(function(taskEl, index) {
                     var status = getTaskStatus(section.id, index);
-                    if (currentFilter === 'all' || status === currentFilter) {
+                    var matches = currentFilter === 'all' ||
+                                  status === currentFilter ||
+                                  (currentFilter === 'acquired' && status.startsWith('acquired'));
+                    if (matches) {
                         taskEl.classList.remove('hidden');
                         visibleTasks++;
                     } else {
@@ -1260,7 +1272,14 @@
                                     '<div class="task-status">' +
                                         '<button class="status-btn pending ' + (getTaskStatus(section.id, index) === 'pending' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'pending\')">A acquerir</button>' +
                                         '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>' +
-                                        '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired\')">Acquis</button>' +
+                                        '<select class="acquis-select ' + (getTaskStatus(section.id, index).startsWith('acquired') ? 'active' : '') + '" onchange="setAcquisLevel(' + section.id + ', ' + index + ', this.value)">' +
+                                            '<option value="">Acquis</option>' +
+                                            '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/5</option>' +
+                                            '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/5</option>' +
+                                            '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/5</option>' +
+                                            '<option value="acquired-4" ' + (getTaskStatus(section.id, index) === 'acquired-4' ? 'selected' : '') + '>Acquis 4/5</option>' +
+                                            '<option value="acquired-5" ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'selected' : '') + '>Acquis 5/5</option>' +
+                                        '</select>' +
                                     '</div>' +
                                 '</div>' +
                                 historyHtml +
@@ -1292,6 +1311,13 @@
                     if (btn.classList.contains(status)) btn.classList.add('active');
                 });
 
+                // Reset acquis select si on clique sur pending ou progress
+                var acquisSelect = taskEl.querySelector('.acquis-select');
+                if (acquisSelect) {
+                    acquisSelect.value = '';
+                    acquisSelect.classList.remove('active');
+                }
+
                 // Update history display
                 var historyEl = taskEl.querySelector('.task-history');
                 if (historyEl) {
@@ -1309,11 +1335,51 @@
             }
         }
 
+        function setAcquisLevel(sectionId, taskIndex, level) {
+            if (!level) return; // Si on selectionne l'option vide
+
+            var key = sectionId + '-' + taskIndex;
+            taskStatus[key] = level;
+            taskHistory[key] = new Date().toLocaleDateString('fr-FR') + ' a ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+
+            var section = document.getElementById('section-' + sectionId);
+            var taskEl = section.querySelectorAll('.task')[taskIndex];
+
+            // Desactiver les boutons pending/progress
+            taskEl.querySelectorAll('.status-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            // Activer le select
+            var acquisSelect = taskEl.querySelector('.acquis-select');
+            if (acquisSelect) {
+                acquisSelect.classList.add('active');
+            }
+
+            // Update history display
+            var historyEl = taskEl.querySelector('.task-history');
+            if (historyEl) {
+                historyEl.textContent = 'Modifie le ' + taskHistory[key];
+            } else {
+                var historyDiv = document.createElement('div');
+                historyDiv.className = 'task-history';
+                historyDiv.textContent = 'Modifie le ' + taskHistory[key];
+                taskEl.appendChild(historyDiv);
+            }
+
+            updateProgress();
+            saveData();
+            applyFilter();
+        }
+
         function calculateSectionProgress(sectionId) {
             var section = formationData.sections.find(function(s) { return s.id === sectionId; });
             if (!section) return 0;
             var acquired = 0;
-            section.tasks.forEach(function(_, index) { if (getTaskStatus(sectionId, index) === 'acquired') acquired++; });
+            section.tasks.forEach(function(_, index) {
+                var status = getTaskStatus(sectionId, index);
+                if (status.startsWith('acquired')) acquired++;
+            });
             return Math.round((acquired / section.tasks.length) * 100);
         }
 
@@ -1325,7 +1391,7 @@
                     var status = getTaskStatus(section.id, index);
                     if (status === 'pending') pendingCount++;
                     else if (status === 'progress') progressCount++;
-                    else if (status === 'acquired') acquiredCount++;
+                    else if (status.startsWith('acquired')) acquiredCount++;
                 });
                 var sectionProgress = calculateSectionProgress(section.id);
                 var fillEl = document.getElementById('progress-fill-' + section.id);
