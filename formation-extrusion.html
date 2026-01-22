@@ -320,7 +320,7 @@
             <button class="profile-btn" onclick="createProfile()">+ Nouveau</button>
             <button class="profile-btn danger" onclick="deleteProfile()">Supprimer</button>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
-            <button class="profile-btn" onclick="showMongoConfig()" id="mongoBtn">&#9729; Cloud Sync</button>
+            <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn">&#9729; Cloud Sync</button>
             <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
         </div>
 
@@ -500,38 +500,40 @@
         </div>
     </div>
 
-    <!-- Modal MongoDB Config -->
-    <div class="modal-overlay" id="mongoModal">
+    <!-- Modal JSONBin Config -->
+    <div class="modal-overlay" id="cloudModal">
         <div class="modal">
-            <div class="modal-header" style="background: linear-gradient(135deg, #4DB33D 0%, #3FA037 100%);">
-                <h3>&#9729; Configuration Cloud</h3>
-                <p>Synchronisation MongoDB Atlas</p>
+            <div class="modal-header" style="background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);">
+                <h3>&#9729; Synchronisation Cloud</h3>
+                <p>JSONBin.io - Partage des profils</p>
             </div>
             <div class="modal-body">
-                <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Connectez-vous a MongoDB Atlas pour synchroniser les profils entre tous les utilisateurs.</p>
-                <div class="modal-field">
-                    <label for="mongoEndpoint">Data API Endpoint</label>
-                    <input type="text" id="mongoEndpoint" placeholder="https://data.mongodb-api.com/app/..." autocomplete="off">
+                <div id="cloudSetup">
+                    <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Synchronisez les profils entre tous les utilisateurs via le cloud.</p>
+                    <div class="modal-field">
+                        <label for="jsonbinApiKey">Cle API (X-Master-Key)</label>
+                        <input type="password" id="jsonbinApiKey" placeholder="$2a$10$..." autocomplete="off">
+                    </div>
+                    <div class="modal-field">
+                        <label for="jsonbinBinId">Bin ID (optionnel - laissez vide pour creer)</label>
+                        <input type="text" id="jsonbinBinId" placeholder="Ex: 65a1b2c3d4e5f6..." autocomplete="off">
+                    </div>
+                    <p style="color: #888; font-size: 11px; margin-top: 10px;">
+                        1. Creez un compte sur <a href="https://jsonbin.io" target="_blank" style="color: #6366F1;">jsonbin.io</a><br>
+                        2. Copiez votre X-Master-Key depuis les parametres<br>
+                        3. Cliquez sur Connecter
+                    </p>
                 </div>
-                <div class="modal-field">
-                    <label for="mongoApiKey">API Key</label>
-                    <input type="password" id="mongoApiKey" placeholder="Votre cle API" autocomplete="off">
+                <div id="cloudConnected" style="display: none; text-align: center;">
+                    <p style="color: #27AE60; font-size: 18px; margin-bottom: 10px;">&#10003; Connecte au cloud</p>
+                    <p style="color: #666; font-size: 13px;">Les profils sont synchronises automatiquement.</p>
+                    <p style="color: #888; font-size: 11px; margin-top: 15px;">Bin ID: <code id="displayBinId" style="background: #f0f0f0; padding: 2px 6px; border-radius: 4px;"></code></p>
                 </div>
-                <div class="modal-field">
-                    <label for="mongoDatabase">Database</label>
-                    <input type="text" id="mongoDatabase" placeholder="gemef_formation" value="gemef_formation" autocomplete="off">
-                </div>
-                <div class="modal-field">
-                    <label for="mongoCollection">Collection</label>
-                    <input type="text" id="mongoCollection" placeholder="profiles" value="profiles" autocomplete="off">
-                </div>
-                <p style="color: #888; font-size: 11px; margin-top: 10px;">
-                    <a href="https://www.mongodb.com/atlas" target="_blank" style="color: #4DB33D;">Creer un compte MongoDB Atlas gratuit</a>
-                </p>
             </div>
             <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeMongoModal()">Annuler</button>
-                <button class="btn" style="background: #4DB33D; color: white;" onclick="connectMongoDB()">Connecter</button>
+                <button class="btn btn-cancel" onclick="closeCloudModal()">Fermer</button>
+                <button class="btn" id="cloudConnectBtn" style="background: #6366F1; color: white;" onclick="connectCloud()">Connecter</button>
+                <button class="btn" id="cloudDisconnectBtn" style="background: #E74C3C; color: white; display: none;" onclick="disconnectCloud()">Deconnecter</button>
             </div>
         </div>
     </div>
@@ -664,9 +666,17 @@
         var signatureCanvases = {};
         var customLogo = null;
         var currentProfile = null;
-        var folderHandle = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // JSONBin.io Cloud Config
+        var cloudConfig = JSON.parse(localStorage.getItem('gemef-cloud-config') || 'null');
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Charger depuis le cloud si configure
+            if (cloudConfig && cloudConfig.apiKey && cloudConfig.binId) {
+                await loadFromCloud();
+                document.getElementById('cloudStatus').textContent = '● Cloud';
+                document.getElementById('cloudStatus').style.color = '#90EE90';
+            }
             loadProfiles();
             loadData();
             renderSections();
@@ -745,11 +755,11 @@
             currentProfile = profileId;
             localStorage.setItem('gemef-last-profile', profileId);
 
-            // Sauvegarder dans le dossier si connecte
-            if (folderHandle) {
+            // Sauvegarder dans le cloud si connecte
+            if (cloudConfig) {
                 taskStatus = {};
                 taskHistory = {};
-                await saveProfileToFolder();
+                await saveToCloud();
             }
 
             closeProfileModal();
@@ -788,11 +798,6 @@
         }
 
         async function confirmDeleteProfile() {
-            // Supprimer du dossier si connecte
-            if (folderHandle) {
-                await deleteProfileFromFolder();
-            }
-
             // Supprimer les donnees du profil
             localStorage.removeItem(getProfileKey(currentProfile));
 
@@ -800,6 +805,11 @@
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             profiles = profiles.filter(function(p) { return p.id !== currentProfile; });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+
+            // Synchroniser avec le cloud
+            if (cloudConfig) {
+                await saveToCloud();
+            }
 
             currentProfile = null;
             localStorage.removeItem('gemef-last-profile');
@@ -826,171 +836,169 @@
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
         }
 
-        // ===== GESTION DOSSIER SAUVEGARDE =====
-        async function chooseFolder() {
-            try {
-                // Verifier si l'API est supportee
-                if (!('showDirectoryPicker' in window)) {
-                    showAlert('Cette fonctionnalite n\'est disponible que sur Chrome ou Edge.', 'Navigateur non supporte', 'warning');
-                    return;
-                }
-
-                folderHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-                document.getElementById('folderStatus').textContent = 'Dossier: ' + folderHandle.name;
-                document.getElementById('folderBtn').textContent = 'Changer dossier';
-
-                // Charger les profils existants du dossier
-                await loadProfilesFromFolder();
-
-                showNotification('Dossier connecte: ' + folderHandle.name);
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error('Erreur selection dossier:', err);
+        // ===== JSONBIN.IO CLOUD SYNC =====
+        function showCloudModal() {
+            var modal = document.getElementById('cloudModal');
+            if (cloudConfig && cloudConfig.binId) {
+                document.getElementById('cloudSetup').style.display = 'none';
+                document.getElementById('cloudConnected').style.display = 'block';
+                document.getElementById('displayBinId').textContent = cloudConfig.binId;
+                document.getElementById('cloudConnectBtn').style.display = 'none';
+                document.getElementById('cloudDisconnectBtn').style.display = 'inline-flex';
+            } else {
+                document.getElementById('cloudSetup').style.display = 'block';
+                document.getElementById('cloudConnected').style.display = 'none';
+                document.getElementById('cloudConnectBtn').style.display = 'inline-flex';
+                document.getElementById('cloudDisconnectBtn').style.display = 'none';
+                // Pre-fill if saved
+                if (cloudConfig && cloudConfig.apiKey) {
+                    document.getElementById('jsonbinApiKey').value = cloudConfig.apiKey;
+                    document.getElementById('jsonbinBinId').value = cloudConfig.binId || '';
                 }
             }
+            modal.classList.add('show');
         }
 
-        async function loadProfilesFromFolder() {
-            if (!folderHandle) return;
+        function closeCloudModal() {
+            document.getElementById('cloudModal').classList.remove('show');
+        }
+
+        async function connectCloud() {
+            var apiKey = document.getElementById('jsonbinApiKey').value.trim();
+            var binId = document.getElementById('jsonbinBinId').value.trim();
+
+            if (!apiKey) {
+                showAlert('Veuillez entrer votre cle API JSONBin.io', 'Cle requise', 'warning');
+                return;
+            }
 
             try {
-                var profiles = [];
+                if (binId) {
+                    // Charger le bin existant
+                    var response = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+                        headers: { 'X-Master-Key': apiKey }
+                    });
+                    if (!response.ok) throw new Error('Bin non trouve ou cle invalide');
 
-                for await (var entry of folderHandle.values()) {
-                    if (entry.kind === 'file' && entry.name.endsWith('.json')) {
-                        try {
-                            var file = await entry.getFile();
-                            var content = await file.text();
-                            var data = JSON.parse(content);
-
-                            // Extraire les infos du profil
-                            var profileName = data.formInfo ?
-                                (data.formInfo.eleveNom || '') + ' ' + (data.formInfo.elevePrenom || '') :
-                                entry.name.replace('.json', '');
-
-                            // Calculer la progression
-                            var totalTasks = 0, acquiredCount = 0;
-                            if (data.taskStatus) {
-                                formationData.sections.forEach(function(section) {
-                                    section.tasks.forEach(function(_, index) {
-                                        totalTasks++;
-                                        var status = data.taskStatus[section.id + '-' + index] || '';
-                                        if (status.startsWith('acquired')) acquiredCount++;
-                                    });
-                                });
-                            }
-                            var progress = totalTasks > 0 ? Math.round((acquiredCount / totalTasks) * 100) : 0;
-
-                            profiles.push({
-                                id: entry.name.replace('.json', ''),
-                                name: profileName.trim() || entry.name.replace('.json', ''),
-                                progress: progress,
-                                fileName: entry.name
+                    var result = await response.json();
+                    // Sauvegarder les donnees du cloud dans localStorage
+                    if (result.record && result.record.profiles) {
+                        localStorage.setItem('gemef-profiles', JSON.stringify(result.record.profiles));
+                        // Sauvegarder aussi les donnees de chaque profil
+                        if (result.record.profilesData) {
+                            Object.keys(result.record.profilesData).forEach(function(key) {
+                                localStorage.setItem(key, JSON.stringify(result.record.profilesData[key]));
                             });
-                        } catch (e) {
-                            console.warn('Erreur lecture fichier:', entry.name, e);
                         }
                     }
+                } else {
+                    // Creer un nouveau bin
+                    var initialData = {
+                        profiles: JSON.parse(localStorage.getItem('gemef-profiles') || '[]'),
+                        profilesData: {},
+                        created: new Date().toISOString()
+                    };
+
+                    // Recuperer toutes les donnees de profils existantes
+                    var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                    profiles.forEach(function(p) {
+                        var data = localStorage.getItem('gemef-formation-' + p.id);
+                        if (data) initialData.profilesData['gemef-formation-' + p.id] = JSON.parse(data);
+                    });
+
+                    var response = await fetch('https://api.jsonbin.io/v3/b', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': apiKey,
+                            'X-Bin-Name': 'gemef-formation'
+                        },
+                        body: JSON.stringify(initialData)
+                    });
+                    if (!response.ok) throw new Error('Erreur creation bin');
+
+                    var result = await response.json();
+                    binId = result.metadata.id;
                 }
 
-                // Mettre a jour localStorage avec les profils du dossier
-                localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
-                loadProfiles();
+                // Sauvegarder la config
+                cloudConfig = { apiKey: apiKey, binId: binId };
+                localStorage.setItem('gemef-cloud-config', JSON.stringify(cloudConfig));
 
-                if (profiles.length > 0) {
-                    showAlert(profiles.length + ' profil(s) charge(s) depuis le dossier.', 'Profils charges', 'success');
-                }
+                document.getElementById('cloudStatus').textContent = '● Cloud';
+                document.getElementById('cloudStatus').style.color = '#90EE90';
+
+                closeCloudModal();
+                showAlert('Connecte au cloud ! Bin ID: ' + binId, 'Connexion reussie', 'success');
+                location.reload();
             } catch (err) {
-                console.error('Erreur chargement dossier:', err);
+                console.error('Erreur connexion cloud:', err);
+                showAlert(err.message, 'Erreur de connexion', 'error');
             }
         }
 
-        async function saveProfileToFolder() {
-            if (!folderHandle || !currentProfile) return;
+        function disconnectCloud() {
+            cloudConfig = null;
+            localStorage.removeItem('gemef-cloud-config');
+            document.getElementById('cloudStatus').textContent = '';
+            closeCloudModal();
+            showAlert('Deconnecte du cloud. Les donnees locales sont conservees.', 'Deconnexion', 'success');
+        }
+
+        async function loadFromCloud() {
+            if (!cloudConfig || !cloudConfig.apiKey || !cloudConfig.binId) return;
+
+            try {
+                var response = await fetch('https://api.jsonbin.io/v3/b/' + cloudConfig.binId + '/latest', {
+                    headers: { 'X-Master-Key': cloudConfig.apiKey }
+                });
+                if (!response.ok) return;
+
+                var result = await response.json();
+                if (result.record) {
+                    if (result.record.profiles) {
+                        localStorage.setItem('gemef-profiles', JSON.stringify(result.record.profiles));
+                    }
+                    if (result.record.profilesData) {
+                        Object.keys(result.record.profilesData).forEach(function(key) {
+                            localStorage.setItem(key, JSON.stringify(result.record.profilesData[key]));
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Erreur chargement cloud:', err);
+            }
+        }
+
+        async function saveToCloud() {
+            if (!cloudConfig || !cloudConfig.apiKey || !cloudConfig.binId) return;
 
             try {
                 var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-                var profile = profiles.find(function(p) { return p.id === currentProfile; });
-                if (!profile) return;
+                var profilesData = {};
 
-                // Creer le nom de fichier
-                var fileName = profile.fileName || (profile.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.json');
-
-                // Mettre a jour le fileName dans le profil
-                profile.fileName = fileName;
-                localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
-
-                // Preparer les donnees
-                var signatures = {};
-                ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
-                    var canvas = document.getElementById(id);
-                    if (canvas) signatures[id] = canvas.toDataURL();
+                profiles.forEach(function(p) {
+                    var data = localStorage.getItem('gemef-formation-' + p.id);
+                    if (data) profilesData['gemef-formation-' + p.id] = JSON.parse(data);
                 });
 
-                var data = {
-                    exportDate: new Date().toISOString(),
-                    version: '2.0',
-                    taskStatus: taskStatus,
-                    taskHistory: taskHistory,
-                    customLogo: customLogo,
-                    signatures: signatures,
-                    formInfo: {
-                        tuteurNom: document.getElementById('tuteurNom').value,
-                        tuteurPrenom: document.getElementById('tuteurPrenom').value,
-                        eleveNom: document.getElementById('eleveNom').value,
-                        elevePrenom: document.getElementById('elevePrenom').value,
-                        dateDebut: document.getElementById('dateDebut').value,
-                        dateFin: document.getElementById('dateFin').value,
-                        duree: document.getElementById('duree').value,
-                        comments: document.getElementById('comments').value,
-                        signatureTuteurDate: document.getElementById('signatureTuteurDate').value,
-                        signatureEleveDate: document.getElementById('signatureEleveDate').value,
-                        signatureChefDate: document.getElementById('signatureChefDate').value
-                    }
+                var cloudData = {
+                    profiles: profiles,
+                    profilesData: profilesData,
+                    lastUpdated: new Date().toISOString()
                 };
 
-                // Ecrire le fichier
-                var fileHandle = await folderHandle.getFileHandle(fileName, { create: true });
-                var writable = await fileHandle.createWritable();
-                await writable.write(JSON.stringify(data, null, 2));
-                await writable.close();
-
-                console.log('Sauvegarde fichier:', fileName);
+                await fetch('https://api.jsonbin.io/v3/b/' + cloudConfig.binId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': cloudConfig.apiKey
+                    },
+                    body: JSON.stringify(cloudData)
+                });
+                console.log('Sauvegarde cloud OK');
             } catch (err) {
-                console.error('Erreur sauvegarde fichier:', err);
-            }
-        }
-
-        async function loadProfileFromFolder(profileId) {
-            if (!folderHandle) return null;
-
-            try {
-                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-                var profile = profiles.find(function(p) { return p.id === profileId; });
-                if (!profile || !profile.fileName) return null;
-
-                var fileHandle = await folderHandle.getFileHandle(profile.fileName);
-                var file = await fileHandle.getFile();
-                var content = await file.text();
-                return JSON.parse(content);
-            } catch (err) {
-                console.error('Erreur lecture profil:', err);
-                return null;
-            }
-        }
-
-        async function deleteProfileFromFolder() {
-            if (!folderHandle || !currentProfile) return;
-
-            try {
-                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-                var profile = profiles.find(function(p) { return p.id === currentProfile; });
-                if (!profile || !profile.fileName) return;
-
-                await folderHandle.removeEntry(profile.fileName);
-                console.log('Fichier supprime:', profile.fileName);
-            } catch (err) {
-                console.error('Erreur suppression fichier:', err);
+                console.error('Erreur sauvegarde cloud:', err);
             }
         }
 
@@ -1474,9 +1482,9 @@
             if (currentProfile) {
                 localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(data));
                 updateProfileProgress();
-                // Sauvegarder aussi dans le dossier si connecte
-                if (folderHandle) {
-                    saveProfileToFolder();
+                // Sauvegarder aussi dans le cloud si connecte
+                if (cloudConfig) {
+                    saveToCloud();
                 }
             }
         }
