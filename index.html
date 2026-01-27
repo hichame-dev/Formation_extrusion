@@ -717,7 +717,7 @@
             profiles.forEach(function(profile) {
                 var option = document.createElement('option');
                 option.value = profile.id;
-                option.textContent = profile.name + ' (' + profile.progress + '%)';
+                option.textContent = profile.name;
                 select.appendChild(option);
             });
             // Selectionner le dernier profil utilise
@@ -856,8 +856,6 @@
                 return p;
             });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
-            loadProfiles();
-            document.getElementById('profileSelect').value = currentProfile;
         }
 
         // ===== JSONBIN.IO CLOUD SYNC =====
