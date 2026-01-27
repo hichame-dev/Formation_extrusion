@@ -856,6 +856,8 @@
                 return p;
             });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+            loadProfiles();
+            document.getElementById('profileSelect').value = currentProfile;
         }
 
         // ===== JSONBIN.IO CLOUD SYNC =====
