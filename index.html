@@ -304,10 +304,7 @@
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" onclick="resetData()">&#8635; Reinitialiser</button>
-            <button class="btn btn-secondary" onclick="showExportModal()">&#128229; Exporter</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">&#128228; Importer</button>
             <button class="btn btn-primary" onclick="exportPDF()">&#128196; Exporter PDF</button>
-            <input type="file" id="importFile" class="hidden-input" accept=".json" onchange="importData(event)">
         </div>
     </header>
     <div class="container">
@@ -590,7 +587,6 @@
                     "Demarrer la fabrication pres de l'extrudeur",
                     "Creer et modifier les etapes de demarrage-arret Extruvision",
                     "Montage et demontage satellite",
-                    "Decider d'arreter avec le chef de poste",
                     "Connaitre et gerer les alarmes"
                 ]},
                 { id: 7, title: "Piloter les installations", tasks: [
