@@ -541,13 +541,39 @@
     <script>
         var formationData = {
             sections: [
+                // DEBUT - Securite & Connaissances de base
                 { id: 1, title: "Securite / Prerequis / Controles prealables", tasks: [
                     "Presentation generale de l'atelier (personnel, fonctionnement)",
                     "Sens d'evacuation et issues de secours",
                     "Emplacement des differents arrets d'urgence",
                     "Regles de securite : conduite chariot (si CACES) + manipulations MP + utilisation outils"
                 ]},
-                { id: 2, title: "Preparer les installations", tasks: [
+                { id: 2, title: "Securite Alimentaire / Hygiene", tasks: [
+                    "Respecter les regles d'hygiene personnelle (tenue de travail propre, lavage des mains, port des EPI adequats)",
+                    "Respecter les bonnes pratiques de fabrication alimentaire",
+                    "Identifier et gerer les risques lies aux allergenes (procedures de nettoyage, separation des productions)",
+                    "Prevenir les contaminations par corps etrangers (verre, metal, plastique dur)",
+                    "Signaler toute non-conformite pouvant affecter la securite alimentaire",
+                    "Respecter les procedures de nettoyage et desinfection specifiques aux zones alimentaires"
+                ]},
+                { id: 3, title: "Lecture d'un OF / Bon de travail", tasks: [
+                    "Chercher les informations liees a la production (code article, bon de travail, pre-reglages, numero de filiere)",
+                    "Identifier les informations essentielles d'un OF (numero, reference produit, quantite)",
+                    "Lire et comprendre les specifications techniques (dimensions, tolerances, couleur)",
+                    "Identifier la matiere premiere a utiliser et ses caracteristiques",
+                    "Reperer les parametres machine preconises",
+                    "Comprendre les instructions particulieres et les remarques client",
+                    "Verifier la coherence entre l'OF et les matieres disponibles",
+                    "Renseigner correctement les informations de suivi de production sur l'OF"
+                ]},
+                { id: 4, title: "Connaissance du Melange", tasks: [
+                    "Passer une semaine au poste melange",
+                    "Connaitre la difference entre un profil amidon et un profil pois",
+                    "Comprendre la mecanique et l'effet de la pate selon les differents profils",
+                    "Connaitre le role du laboratoire et de la R&D"
+                ]},
+                // MILIEU - Operationnel / Physique
+                { id: 5, title: "Preparer les installations", tasks: [
                     "Monter les lignes en debut semaine (mouzon, doseurs, etc.)",
                     "Monter les brides et couronnes, les filieres et granulateurs",
                     "S'assurer de la disponibilite des MP pour les satellites",
@@ -555,7 +581,7 @@
                     "Installer la Comitrole",
                     "Choisir et installer la grille de la Comitrole"
                 ]},
-                { id: 3, title: "Demarrer les installations", tasks: [
+                { id: 6, title: "Demarrer les installations", tasks: [
                     "Controler la proprete de la ligne",
                     "Piloter les transferts de farine",
                     "Charger la recette sur Extruvision et la controler",
@@ -567,7 +593,7 @@
                     "Decider d'arreter avec le chef de poste",
                     "Connaitre et gerer les alarmes"
                 ]},
-                { id: 4, title: "Piloter les installations", tasks: [
+                { id: 7, title: "Piloter les installations", tasks: [
                     "Regler les parametres machine (K-Tron, seuil de remplissage, etc.) par rapport a ses specificites",
                     "Regler les parametres machine par rapport a la qualite des produits",
                     "Modifier un point de fonctionnement",
@@ -576,7 +602,18 @@
                     "Surveiller le fonctionnement des satellites",
                     "Demarrer la station sirop en debut de semaine et anticiper l'arret en fin de semaine"
                 ]},
-                { id: 5, title: "Controles en cours de poste / Qualite", tasks: [
+                { id: 8, title: "Superviser les lignes", tasks: [
+                    "Choisir et lancer la recette de la station sirop",
+                    "Utiliser Extruvision au quotidien",
+                    "Utiliser les courbes d'Extruvision pour analyse de probleme"
+                ]},
+                { id: 9, title: "Regler les installations", tasks: [
+                    "Regler les granulateurs",
+                    "Controler le fonctionnement des DPM et barreaux aimantes avec operateurs Conditionnement",
+                    "Tester les debits des satellites",
+                    "Verifier et regler le parallelisme"
+                ]},
+                { id: 10, title: "Controles en cours de poste / Qualite", tasks: [
                     "Realiser les prises echantillons aux frequences definies par le Controle Qualite",
                     "Realiser l'ensemble des controles qualite (densite, granulometrie, taille des grains, couleurs, humidite, etc.)",
                     "Enregistrer les resultats des controles qualite sur les fiches d'auto-controles",
@@ -586,49 +623,18 @@
                     "Connaitre les regles qualite en vigueur au sein de l'Extrusion",
                     "Appliquer les differents protocoles de fabrication (standard, BBF, GF)"
                 ]},
-                { id: 6, title: "Superviser les lignes", tasks: [
-                    "Choisir et lancer la recette de la station sirop",
-                    "Utiliser Extruvision au quotidien",
-                    "Utiliser les courbes d'Extruvision pour analyse de probleme"
-                ]},
-                { id: 7, title: "Regler les installations", tasks: [
-                    "Regler les granulateurs",
-                    "Controler le fonctionnement des DPM et barreaux aimantes avec operateurs Conditionnement",
-                    "Tester les debits des satellites",
-                    "Verifier et regler le parallelisme"
-                ]},
-                { id: 8, title: "Coordonner l'activite", tasks: [
-                    "Suivre la consommation de melange a extruder",
-                    "Approvisionner le materiel et consommable hygiene et nettoyage",
-                    "Consulter et mettre a jour le planning Excel"
-                ]},
-                { id: 9, title: "Transmettre les informations", tasks: [
-                    "Imprimer les rapports instantanes",
-                    "Remplir les fiches de NC et les transmettre",
-                    "Isoler et identifier un produit NC",
-                    "Saisir les entrees - sorties et fin de fabrication en stock dans X3",
-                    "Consulter et mettre a jour le planning Excel",
-                    "Imprimer et exploiter les rapports de fin d'OF",
-                    "Renseigner les plannings de nettoyage",
-                    "Savoir effectuer une passation de consignes entre 2 postes"
-                ]},
-                { id: 10, title: "Gerer les outillages", tasks: [
+                { id: 11, title: "Gerer les outillages", tasks: [
                     "Preparer les filieres sales pour nettoyage",
                     "Receptionner les filieres propres",
                     "Nettoyer les filieres",
                     "Utiliser correctement ses outils"
                 ]},
-                { id: 11, title: "Assurer le bon etat technique des installations", tasks: [
+                { id: 12, title: "Assurer le bon etat technique des installations", tasks: [
                     "Remplir une feuille de Demande d'Intervention (DI)",
                     "Remplacer un profil de vis",
                     "Installer de nouveaux elements de vis",
                     "Controle usure du profil et entrefer",
                     "Identifier une panne et demander ou realiser une intervention adaptee"
-                ]},
-                { id: 12, title: "Maintenir ses connaissances", tasks: [
-                    "Utiliser les instructions techniques disponibles",
-                    "Appliquer et participer a l'evolution des procedures",
-                    "Faire des propositions d'amelioration"
                 ]},
                 { id: 13, title: "Nettoyer / Ranger", tasks: [
                     "Nettoyer les differentes installations en fonction des procedures en place",
@@ -643,33 +649,31 @@
                     "Changer le tamis selon le bon de travail",
                     "Changer et souffler le tamis du haut, souffler le tamis du bas"
                 ]},
-                { id: 14, title: "Comportement / Attitudes", tasks: [
+                // FIN - Coordination & Comportement
+                { id: 14, title: "Coordonner l'activite", tasks: [
+                    "Suivre la consommation de melange a extruder",
+                    "Approvisionner le materiel et consommable hygiene et nettoyage",
+                    "Consulter et mettre a jour le planning Excel"
+                ]},
+                { id: 15, title: "Transmettre les informations", tasks: [
+                    "Imprimer les rapports instantanes",
+                    "Remplir les fiches de NC et les transmettre",
+                    "Isoler et identifier un produit NC",
+                    "Saisir les entrees - sorties et fin de fabrication en stock dans X3",
+                    "Consulter et mettre a jour le planning Excel",
+                    "Imprimer et exploiter les rapports de fin d'OF",
+                    "Renseigner les plannings de nettoyage",
+                    "Savoir effectuer une passation de consignes entre 2 postes"
+                ]},
+                { id: 16, title: "Maintenir ses connaissances", tasks: [
+                    "Utiliser les instructions techniques disponibles",
+                    "Appliquer et participer a l'evolution des procedures",
+                    "Faire des propositions d'amelioration"
+                ]},
+                { id: 17, title: "Comportement / Attitudes", tasks: [
                     "Signaler tout dysfonctionnement aux services competents : Maintenance si defaut machines, Magasin si rupture matieres, CDP si produits non conforme",
                     "Signaler a ses collegues tout depart du poste (pause, administratif, etc.)",
                     "Apporter son aide a ses collegues en cas de surcharge de travail"
-                ]},
-                { id: 15, title: "Securite Alimentaire / Hygiene", tasks: [
-                    "Respecter les regles d'hygiene personnelle (tenue de travail propre, lavage des mains, port des EPI adequats)",
-                    "Respecter les bonnes pratiques de fabrication alimentaire",
-                    "Identifier et gerer les risques lies aux allergenes (procedures de nettoyage, separation des productions)",
-                    "Prevenir les contaminations par corps etrangers (verre, metal, plastique dur)",
-                    "Signaler toute non-conformite pouvant affecter la securite alimentaire",
-                    "Respecter les procedures de nettoyage et desinfection specifiques aux zones alimentaires"
-                ]},
-                { id: 16, title: "Lecture d'un OF (Ordre de Fabrication)", tasks: [
-                    "Identifier les informations essentielles d'un OF (numero, reference produit, quantite)",
-                    "Lire et comprendre les specifications techniques (dimensions, tolerances, couleur)",
-                    "Identifier la matiere premiere a utiliser et ses caracteristiques",
-                    "Reperer les parametres machine preconises",
-                    "Comprendre les instructions particulieres et les remarques client",
-                    "Verifier la coherence entre l'OF et les matieres disponibles",
-                    "Renseigner correctement les informations de suivi de production sur l'OF"
-                ]},
-                { id: 17, title: "Connaissance du Melange", tasks: [
-                    "Passer une semaine au poste melange",
-                    "Connaitre la difference entre un profil amidon et un profil pois",
-                    "Comprendre la mecanique et l'effet de la pate selon les differents profils",
-                    "Connaitre le role du laboratoire et de la R&D"
                 ]},
                 { id: 18, title: "Validation Formation", tasks: [
                     "Arreter une ligne",
