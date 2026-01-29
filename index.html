@@ -9,15 +9,15 @@
         :root {
             --gemef-orange: #E87722;
             --gemef-orange-dark: #C5611A;
-            --gemef-gray: #4A4A4A;
-            --status-pending: #E74C3C;
-            --status-progress: #F39C12;
-            --status-acquired: #27AE60;
-            --bg-main: #F5F5F5;
+            --gemef-gray: #3A3A3A;
+            --status-pending: #DC3545;
+            --status-progress: #E67E00;
+            --status-acquired: #198754;
+            --bg-main: #F0F2F5;
             --bg-card: #FFFFFF;
-            --border-color: #E0E0E0;
-            --text-primary: #2C2C2C;
-            --text-secondary: #666666;
+            --border-color: #D0D0D0;
+            --text-primary: #1A1A1A;
+            --text-secondary: #505050;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Roboto', Arial, Helvetica, sans-serif; background: var(--bg-main); color: var(--text-primary); line-height: 1.5; }
@@ -538,143 +538,143 @@
     <script>
         var formationData = {
             sections: [
-                // DEBUT - Securite & Connaissances de base
-                { id: 1, title: "Securite / Prerequis / Controles prealables", tasks: [
-                    "Presentation generale de l'atelier (personnel, fonctionnement)",
-                    "Sens d'evacuation et issues de secours",
-                    "Emplacement des differents arrets d'urgence",
-                    "Regles de securite : conduite chariot (si CACES) + manipulations MP + utilisation outils"
+                // DEBUT - Sécurité & Connaissances de base
+                { id: 1, title: "Sécurité / Prérequis / Contrôles préalables", tasks: [
+                    "Présentation générale de l'atelier (personnel, fonctionnement)",
+                    "Sens d'évacuation et issues de secours",
+                    "Emplacement des différents arrêts d'urgence",
+                    "Règles de sécurité : conduite chariot (si CACES) + manipulations MP + utilisation outils"
                 ]},
-                { id: 2, title: "Securite Alimentaire / Hygiene", tasks: [
-                    "Respecter les regles d'hygiene personnelle (tenue de travail propre, lavage des mains, port des EPI adequats)",
+                { id: 2, title: "Sécurité Alimentaire / Hygiène", tasks: [
+                    "Respecter les règles d'hygiène personnelle (tenue de travail propre, lavage des mains, port des EPI adéquats)",
                     "Respecter les bonnes pratiques de fabrication alimentaire",
-                    "Identifier et gerer les risques lies aux allergenes (procedures de nettoyage, separation des productions)",
-                    "Prevenir les contaminations par corps etrangers (verre, metal, plastique dur)",
-                    "Signaler toute non-conformite pouvant affecter la securite alimentaire",
-                    "Respecter les procedures de nettoyage et desinfection specifiques aux zones alimentaires"
+                    "Identifier et gérer les risques liés aux allergènes (procédures de nettoyage, séparation des productions)",
+                    "Prévenir les contaminations par corps étrangers (verre, métal, plastique dur)",
+                    "Signaler toute non-conformité pouvant affecter la sécurité alimentaire",
+                    "Respecter les procédures de nettoyage et désinfection spécifiques aux zones alimentaires"
                 ]},
                 { id: 3, title: "Lecture d'un OF / Bon de travail", tasks: [
-                    "Chercher les informations liees a la production (code article, bon de travail, pre-reglages, numero de filiere)",
-                    "Identifier les informations essentielles d'un OF (numero, reference produit, quantite)",
-                    "Lire et comprendre les specifications techniques (dimensions, tolerances, couleur)",
-                    "Identifier la matiere premiere a utiliser et ses caracteristiques",
-                    "Reperer les parametres machine preconises",
-                    "Comprendre les instructions particulieres et les remarques client",
-                    "Verifier la coherence entre l'OF et les matieres disponibles",
+                    "Chercher les informations liées à la production (code article, bon de travail, pré-réglages, numéro de filière)",
+                    "Identifier les informations essentielles d'un OF (numéro, référence produit, quantité)",
+                    "Lire et comprendre les spécifications techniques (dimensions, tolérances, couleur)",
+                    "Identifier la matière première à utiliser et ses caractéristiques",
+                    "Repérer les paramètres machine préconisés",
+                    "Comprendre les instructions particulières et les remarques client",
+                    "Vérifier la cohérence entre l'OF et les matières disponibles",
                     "Renseigner correctement les informations de suivi de production sur l'OF"
                 ]},
-                { id: 4, title: "Connaissance du Melange", tasks: [
-                    "Passer une semaine au poste melange",
-                    "Connaitre la difference entre un profil amidon et un profil pois",
-                    "Comprendre la mecanique et l'effet de la pate selon les differents profils",
-                    "Connaitre le role du laboratoire et de la R&D"
+                { id: 4, title: "Connaissance du Mélange", tasks: [
+                    "Passer une semaine au poste mélange",
+                    "Connaître la différence entre un profil amidon et un profil pois",
+                    "Comprendre la mécanique et l'effet de la pâte selon les différents profils",
+                    "Connaître le rôle du laboratoire et de la R&D"
                 ]},
-                // MILIEU - Operationnel / Physique
-                { id: 5, title: "Preparer les installations", tasks: [
-                    "Monter les lignes en debut semaine (mouzon, doseurs, etc.)",
-                    "Monter les brides et couronnes, les filieres et granulateurs",
-                    "S'assurer de la disponibilite des MP pour les satellites",
+                // MILIEU - Opérationnel / Physique
+                { id: 5, title: "Préparer les installations", tasks: [
+                    "Monter les lignes en début semaine (mouzon, doseurs, etc.)",
+                    "Monter les brides et couronnes, les filières et granulateurs",
+                    "S'assurer de la disponibilité des MP pour les satellites",
                     "Brancher les satellites",
                     "Installer la Comitrole",
                     "Choisir et installer la grille de la Comitrole"
                 ]},
-                { id: 6, title: "Demarrer les installations", tasks: [
-                    "Controler la proprete de la ligne",
+                { id: 6, title: "Démarrer les installations", tasks: [
+                    "Contrôler la propreté de la ligne",
                     "Piloter les transferts de farine",
-                    "Charger la recette sur Extruvision et la controler",
-                    "Demarrer la ligne avec Extruvision",
-                    "Mettre a 0 le totalisateur Ktron",
-                    "Demarrer la fabrication pres de l'extrudeur",
-                    "Creer et modifier les etapes de demarrage-arret Extruvision",
-                    "Montage et demontage satellite",
-                    "Connaitre et gerer les alarmes"
+                    "Charger la recette sur Extruvision et la contrôler",
+                    "Démarrer la ligne avec Extruvision",
+                    "Mettre à 0 le totalisateur Ktron",
+                    "Démarrer la fabrication près de l'extrudeur",
+                    "Créer et modifier les étapes de démarrage-arrêt Extruvision",
+                    "Montage et démontage satellite",
+                    "Connaître et gérer les alarmes"
                 ]},
                 { id: 7, title: "Piloter les installations", tasks: [
-                    "Regler les parametres machine (K-Tron, seuil de remplissage, etc.) par rapport a ses specificites",
-                    "Regler les parametres machine par rapport a la qualite des produits",
+                    "Régler les paramètres machine (K-Tron, seuil de remplissage, etc.) par rapport à ses spécificités",
+                    "Régler les paramètres machine par rapport à la qualité des produits",
                     "Modifier un point de fonctionnement",
-                    "Piloter les secheurs et refroidisseurs",
+                    "Piloter les sécheurs et refroidisseurs",
                     "Surveiller le fonctionnement de la Comitrole",
                     "Surveiller le fonctionnement des satellites",
-                    "Demarrer la station sirop en debut de semaine et anticiper l'arret en fin de semaine"
+                    "Démarrer la station sirop en début de semaine et anticiper l'arrêt en fin de semaine"
                 ]},
                 { id: 8, title: "Superviser les lignes", tasks: [
                     "Choisir et lancer la recette de la station sirop",
                     "Utiliser Extruvision au quotidien",
-                    "Utiliser les courbes d'Extruvision pour analyse de probleme"
+                    "Utiliser les courbes d'Extruvision pour analyse de problème"
                 ]},
-                { id: 9, title: "Regler les installations", tasks: [
-                    "Regler les granulateurs",
-                    "Controler le fonctionnement des DPM et barreaux aimantes avec operateurs Conditionnement",
-                    "Tester les debits des satellites",
-                    "Verifier et regler le parallelisme"
+                { id: 9, title: "Régler les installations", tasks: [
+                    "Régler les granulateurs",
+                    "Contrôler le fonctionnement des DPM et barreaux aimantés avec opérateurs Conditionnement",
+                    "Tester les débits des satellites",
+                    "Vérifier et régler le parallélisme"
                 ]},
-                { id: 10, title: "Controles en cours de poste / Qualite", tasks: [
-                    "Realiser les prises echantillons aux frequences definies par le Controle Qualite",
-                    "Realiser l'ensemble des controles qualite (densite, granulometrie, taille des grains, couleurs, humidite, etc.)",
-                    "Enregistrer les resultats des controles qualite sur les fiches d'auto-controles",
-                    "Decider de la conformite d'un produit et de sa destination",
-                    "En cas de NC, communiquer avec les operateurs Conditionnement pour isoler et bloquer les produits NC",
-                    "Decider d'arreter ou non la production en cas de NC",
-                    "Connaitre les regles qualite en vigueur au sein de l'Extrusion",
-                    "Appliquer les differents protocoles de fabrication (standard, BBF, GF)"
+                { id: 10, title: "Contrôles en cours de poste / Qualité", tasks: [
+                    "Réaliser les prises échantillons aux fréquences définies par le Contrôle Qualité",
+                    "Réaliser l'ensemble des contrôles qualité (densité, granulométrie, taille des grains, couleurs, humidité, etc.)",
+                    "Enregistrer les résultats des contrôles qualité sur les fiches d'auto-contrôles",
+                    "Décider de la conformité d'un produit et de sa destination",
+                    "En cas de NC, communiquer avec les opérateurs Conditionnement pour isoler et bloquer les produits NC",
+                    "Décider d'arrêter ou non la production en cas de NC",
+                    "Connaître les règles qualité en vigueur au sein de l'Extrusion",
+                    "Appliquer les différents protocoles de fabrication (standard, BBF, GF)"
                 ]},
-                { id: 11, title: "Gerer les outillages", tasks: [
-                    "Preparer les filieres sales pour nettoyage",
-                    "Receptionner les filieres propres",
-                    "Nettoyer les filieres",
+                { id: 11, title: "Gérer les outillages", tasks: [
+                    "Préparer les filières sales pour nettoyage",
+                    "Réceptionner les filières propres",
+                    "Nettoyer les filières",
                     "Utiliser correctement ses outils"
                 ]},
-                { id: 12, title: "Assurer le bon etat technique des installations", tasks: [
+                { id: 12, title: "Assurer le bon état technique des installations", tasks: [
                     "Remplir une feuille de Demande d'Intervention (DI)",
                     "Remplacer un profil de vis",
-                    "Installer de nouveaux elements de vis",
-                    "Controle usure du profil et entrefer",
-                    "Identifier une panne et demander ou realiser une intervention adaptee"
+                    "Installer de nouveaux éléments de vis",
+                    "Contrôle usure du profil et entrefer",
+                    "Identifier une panne et demander ou réaliser une intervention adaptée"
                 ]},
                 { id: 13, title: "Nettoyer / Ranger", tasks: [
-                    "Nettoyer les differentes installations en fonction des procedures en place",
+                    "Nettoyer les différentes installations en fonction des procédures en place",
                     "Nettoyer les sols",
-                    "Vider les differentes poubelles",
+                    "Vider les différentes poubelles",
                     "Ranger l'atelier (aspirateur, balais, pelles ...)",
                     "Participer au nettoyage de fin de semaine",
-                    "S'assurer qu'aucune matiere ou residu de la production precedente ne subsiste sur la ligne (verification complete avant demarrage d'une nouvelle production)",
-                    "Effectuer l'arret de ligne : nettoyage machine et granulateur",
-                    "Realiser la vidange du four (20 min) et souffler le four",
-                    "Aspirer autour de la balance et souffler tous les produits precedents en zone tamis",
+                    "S'assurer qu'aucune matière ou résidu de la production précédente ne subsiste sur la ligne (vérification complète avant démarrage d'une nouvelle production)",
+                    "Effectuer l'arrêt de ligne : nettoyage machine et granulateur",
+                    "Réaliser la vidange du four (20 min) et souffler le four",
+                    "Aspirer autour de la balance et souffler tous les produits précédents en zone tamis",
                     "Changer le tamis selon le bon de travail",
                     "Changer et souffler le tamis du haut, souffler le tamis du bas"
                 ]},
                 // FIN - Coordination & Comportement
-                { id: 14, title: "Coordonner l'activite", tasks: [
-                    "Suivre la consommation de melange a extruder",
-                    "Approvisionner le materiel et consommable hygiene et nettoyage",
-                    "Consulter et mettre a jour le planning Excel"
+                { id: 14, title: "Coordonner l'activité", tasks: [
+                    "Suivre la consommation de mélange à extruder",
+                    "Approvisionner le matériel et consommable hygiène et nettoyage",
+                    "Consulter et mettre à jour le planning Excel"
                 ]},
                 { id: 15, title: "Transmettre les informations", tasks: [
-                    "Imprimer les rapports instantanes",
+                    "Imprimer les rapports instantanés",
                     "Remplir les fiches de NC et les transmettre",
                     "Isoler et identifier un produit NC",
-                    "Saisir les entrees - sorties et fin de fabrication en stock dans X3",
-                    "Consulter et mettre a jour le planning Excel",
+                    "Saisir les entrées - sorties et fin de fabrication en stock dans X3",
+                    "Consulter et mettre à jour le planning Excel",
                     "Imprimer et exploiter les rapports de fin d'OF",
                     "Renseigner les plannings de nettoyage",
                     "Savoir effectuer une passation de consignes entre 2 postes"
                 ]},
                 { id: 16, title: "Maintenir ses connaissances", tasks: [
                     "Utiliser les instructions techniques disponibles",
-                    "Appliquer et participer a l'evolution des procedures",
-                    "Faire des propositions d'amelioration"
+                    "Appliquer et participer à l'évolution des procédures",
+                    "Faire des propositions d'amélioration"
                 ]},
                 { id: 17, title: "Comportement / Attitudes", tasks: [
-                    "Signaler tout dysfonctionnement aux services competents : Maintenance si defaut machines, Magasin si rupture matieres, CDP si produits non conforme",
-                    "Signaler a ses collegues tout depart du poste (pause, administratif, etc.)",
-                    "Apporter son aide a ses collegues en cas de surcharge de travail"
+                    "Signaler tout dysfonctionnement aux services compétents : Maintenance si défaut machines, Magasin si rupture matières, CDP si produits non conforme",
+                    "Signaler à ses collègues tout départ du poste (pause, administratif, etc.)",
+                    "Apporter son aide à ses collègues en cas de surcharge de travail"
                 ]},
                 { id: 18, title: "Validation Formation", tasks: [
-                    "Arreter une ligne",
-                    "Preparer la machine, le four et le tamis",
-                    "Demarrer la ligne et regler le produit"
+                    "Arrêter une ligne",
+                    "Préparer la machine, le four et le tamis",
+                    "Démarrer la ligne et régler le produit"
                 ]}
             ]
         };
@@ -717,7 +717,7 @@
             profiles.forEach(function(profile) {
                 var option = document.createElement('option');
                 option.value = profile.id;
-                option.textContent = profile.name + ' (' + profile.progress + '%)';
+                option.textContent = profile.name;
                 select.appendChild(option);
             });
             // Selectionner le dernier profil utilise
