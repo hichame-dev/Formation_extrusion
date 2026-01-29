@@ -147,17 +147,6 @@
         .notification { position: fixed; bottom: 30px; right: 30px; background: var(--status-acquired); color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1000; }
         .notification.show { transform: translateY(0); opacity: 1; }
 
-        /* Indicateur sauvegarde cloud */
-        .cloud-indicator { position: fixed; bottom: 20px; left: 20px; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; opacity: 0; transform: translateY(20px); z-index: 1000; }
-        .cloud-indicator.saving { background: #FFF3CD; color: #856404; opacity: 1; transform: translateY(0); }
-        .cloud-indicator.saved { background: #D4EDDA; color: #155724; opacity: 1; transform: translateY(0); }
-        .cloud-indicator.error { background: #F8D7DA; color: #721C24; opacity: 1; transform: translateY(0); }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .cloud-indicator.saving::before { content: ""; display: inline-block; width: 14px; height: 14px; border: 2px solid #856404; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
-
-        /* Icones sections */
-        .section-icon { font-size: 20px; margin-right: 5px; }
-
         /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
@@ -546,32 +535,7 @@
         </div>
     </div>
 
-    <!-- Indicateur Cloud -->
-    <div id="cloudIndicator" class="cloud-indicator"></div>
-
     <script>
-        // Icônes pour chaque section
-        var sectionIcons = {
-            1: "🛡️",   // Sécurité
-            2: "🍽️",   // Sécurité Alimentaire
-            3: "📋",   // Lecture OF
-            4: "🧪",   // Mélange
-            5: "🔧",   // Préparer
-            6: "▶️",   // Démarrer
-            7: "⚙️",   // Piloter
-            8: "👁️",   // Superviser
-            9: "🎛️",   // Régler
-            10: "✅",  // Contrôles Qualité
-            11: "🔨",  // Outillages
-            12: "🔩",  // État technique
-            13: "🧹",  // Nettoyer
-            14: "📊",  // Coordonner
-            15: "📤",  // Transmettre
-            16: "📚",  // Connaissances
-            17: "🤝",  // Comportement
-            18: "🎓"   // Validation
-        };
-
         var formationData = {
             sections: [
                 // DEBUT - Sécurité & Connaissances de base
@@ -1357,7 +1321,7 @@
                 var sectionProgress = calculateSectionProgress(section.id);
                 sectionEl.innerHTML =
                     '<div class="section-header" onclick="toggleSection(' + section.id + ')">' +
-                        '<div class="section-title"><span class="section-icon">' + (sectionIcons[section.id] || '') + '</span><span class="section-number">' + section.id + '</span>' + section.title + '</div>' +
+                        '<div class="section-title"><span class="section-number">' + section.id + '</span>' + section.title + '</div>' +
                         '<div class="section-progress">' +
                             '<div class="section-progress-bar"><div class="section-progress-fill" id="progress-fill-' + section.id + '" style="width: ' + sectionProgress + '%"></div></div>' +
                             '<span class="section-progress-text" id="progress-text-' + section.id + '">' + sectionProgress + '%</span>' +
