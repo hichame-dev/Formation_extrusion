@@ -634,8 +634,6 @@
                 { id: 12, title: "Assurer le bon état technique des installations", tasks: [
                     "Remplir une feuille de Demande d'Intervention (DI)",
                     "Remplacer un profil de vis",
-                    "Installer de nouveaux éléments de vis",
-                    "Contrôle usure du profil et entrefer",
                     "Identifier une panne et demander ou réaliser une intervention adaptée"
                 ]},
                 { id: 13, title: "Nettoyer / Ranger", tasks: [
@@ -681,6 +679,10 @@
                     "Arrêter une ligne",
                     "Préparer la machine, le four et le tamis",
                     "Démarrer la ligne et régler le produit"
+                ]},
+                { id: 19, title: "Connaissance validée par formation externe", tasks: [
+                    "Contrôle usure de vis",
+                    "Installer, monter et démonter élément de vis"
                 ]}
             ]
         };
@@ -1338,7 +1340,7 @@
                         section.tasks.map(function(task, index) {
                             var history = getTaskHistory(section.id, index);
                             var historyHtml = history ? '<div class="task-history">Modifie le ' + history + '</div>' : '';
-                            var isDirectAcquis = (section.id === 16); // Section 16 = Acquis direct 5/5
+                            var isDirectAcquis = (section.id === 16 || section.id === 19); // Sections 16 et 19 = Acquis direct 5/5
                             var acquisHtml = '';
                             if (isDirectAcquis) {
                                 acquisHtml = '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired-5\')">Acquis</button>';
