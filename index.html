@@ -566,9 +566,10 @@
                     "Repérer les paramètres machine préconisés",
                     "Comprendre les instructions particulières et les remarques client",
                     "Vérifier la cohérence entre l'OF et les matières disponibles",
-                    "Renseigner correctement les informations de suivi de production sur l'OF"
+                    "Renseigner correctement les informations de suivi de production sur l'OF",
+                    "Renseigner correctement la check-list de suivi de production à faire valider par le chef de poste"
                 ]},
-                { id: 4, title: "Connaissance du Mélange", tasks: [
+                { id: 4, title: "Connaissance Générale", tasks: [
                     "Passer une semaine au poste mélange",
                     "Connaître la différence entre un profil amidon et un profil pois",
                     "Comprendre la mécanique et l'effet de la pâte selon les différents profils",
@@ -622,7 +623,7 @@
                     "En cas de NC, communiquer avec les opérateurs Conditionnement pour isoler et bloquer les produits NC",
                     "Décider d'arrêter ou non la production en cas de NC",
                     "Connaître les règles qualité en vigueur au sein de l'Extrusion",
-                    "Appliquer les différents protocoles de fabrication (standard, BBF, GF)"
+                    "Appliquer les différents protocoles de fabrication (standard, GF)"
                 ]},
                 { id: 11, title: "Gérer les outillages", tasks: [
                     "Préparer les filières sales pour nettoyage",
@@ -633,8 +634,6 @@
                 { id: 12, title: "Assurer le bon état technique des installations", tasks: [
                     "Remplir une feuille de Demande d'Intervention (DI)",
                     "Remplacer un profil de vis",
-                    "Installer de nouveaux éléments de vis",
-                    "Contrôle usure du profil et entrefer",
                     "Identifier une panne et demander ou réaliser une intervention adaptée"
                 ]},
                 { id: 13, title: "Nettoyer / Ranger", tasks: [
@@ -660,7 +659,7 @@
                     "Imprimer les rapports instantanés",
                     "Remplir les fiches de NC et les transmettre",
                     "Isoler et identifier un produit NC",
-                    "Saisir les entrées - sorties et fin de fabrication en stock dans X3",
+                    "Saisir les entrées - sorties et fin de fabrication en stock dans X3 (niveau 200)",
                     "Consulter et mettre à jour le planning Excel",
                     "Imprimer et exploiter les rapports de fin d'OF",
                     "Renseigner les plannings de nettoyage",
@@ -680,6 +679,10 @@
                     "Arrêter une ligne",
                     "Préparer la machine, le four et le tamis",
                     "Démarrer la ligne et régler le produit"
+                ]},
+                { id: 19, title: "Connaissance validée par formation externe", tasks: [
+                    "Contrôle usure de vis",
+                    "Installer, monter et démonter élément de vis"
                 ]}
             ]
         };
@@ -1337,20 +1340,27 @@
                         section.tasks.map(function(task, index) {
                             var history = getTaskHistory(section.id, index);
                             var historyHtml = history ? '<div class="task-history">Modifie le ' + history + '</div>' : '';
+                            var isDirectAcquis = (section.id === 16 || section.id === 19); // Sections 16 et 19 = Acquis direct 5/5
+                            var acquisHtml = '';
+                            if (isDirectAcquis) {
+                                acquisHtml = '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired-5\')">Acquis</button>';
+                            } else {
+                                acquisHtml = '<select class="acquis-select ' + (getTaskStatus(section.id, index).startsWith('acquired') ? 'active' : '') + '" onchange="setAcquisLevel(' + section.id + ', ' + index + ', this.value)">' +
+                                    '<option value="">Acquis</option>' +
+                                    '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/5</option>' +
+                                    '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/5</option>' +
+                                    '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/5</option>' +
+                                    '<option value="acquired-4" ' + (getTaskStatus(section.id, index) === 'acquired-4' ? 'selected' : '') + '>Acquis 4/5</option>' +
+                                    '<option value="acquired-5" ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'selected' : '') + '>Acquis 5/5</option>' +
+                                '</select>';
+                            }
                             return '<div class="task">' +
                                 '<div class="task-main">' +
                                     '<div class="task-text">' + task + '</div>' +
                                     '<div class="task-status">' +
                                         '<button class="status-btn pending ' + (getTaskStatus(section.id, index) === 'pending' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'pending\')">A acquerir</button>' +
                                         '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>' +
-                                        '<select class="acquis-select ' + (getTaskStatus(section.id, index).startsWith('acquired') ? 'active' : '') + '" onchange="setAcquisLevel(' + section.id + ', ' + index + ', this.value)">' +
-                                            '<option value="">Acquis</option>' +
-                                            '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/5</option>' +
-                                            '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/5</option>' +
-                                            '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/5</option>' +
-                                            '<option value="acquired-4" ' + (getTaskStatus(section.id, index) === 'acquired-4' ? 'selected' : '') + '>Acquis 4/5</option>' +
-                                            '<option value="acquired-5" ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'selected' : '') + '>Acquis 5/5</option>' +
-                                        '</select>' +
+                                        acquisHtml +
                                     '</div>' +
                                 '</div>' +
                                 historyHtml +
