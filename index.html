@@ -1338,20 +1338,27 @@
                         section.tasks.map(function(task, index) {
                             var history = getTaskHistory(section.id, index);
                             var historyHtml = history ? '<div class="task-history">Modifie le ' + history + '</div>' : '';
+                            var isDirectAcquis = (section.id === 16); // Section 16 = Acquis direct 5/5
+                            var acquisHtml = '';
+                            if (isDirectAcquis) {
+                                acquisHtml = '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired-5\')">Acquis</button>';
+                            } else {
+                                acquisHtml = '<select class="acquis-select ' + (getTaskStatus(section.id, index).startsWith('acquired') ? 'active' : '') + '" onchange="setAcquisLevel(' + section.id + ', ' + index + ', this.value)">' +
+                                    '<option value="">Acquis</option>' +
+                                    '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/5</option>' +
+                                    '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/5</option>' +
+                                    '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/5</option>' +
+                                    '<option value="acquired-4" ' + (getTaskStatus(section.id, index) === 'acquired-4' ? 'selected' : '') + '>Acquis 4/5</option>' +
+                                    '<option value="acquired-5" ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'selected' : '') + '>Acquis 5/5</option>' +
+                                '</select>';
+                            }
                             return '<div class="task">' +
                                 '<div class="task-main">' +
                                     '<div class="task-text">' + task + '</div>' +
                                     '<div class="task-status">' +
                                         '<button class="status-btn pending ' + (getTaskStatus(section.id, index) === 'pending' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'pending\')">A acquerir</button>' +
                                         '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>' +
-                                        '<select class="acquis-select ' + (getTaskStatus(section.id, index).startsWith('acquired') ? 'active' : '') + '" onchange="setAcquisLevel(' + section.id + ', ' + index + ', this.value)">' +
-                                            '<option value="">Acquis</option>' +
-                                            '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/5</option>' +
-                                            '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/5</option>' +
-                                            '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/5</option>' +
-                                            '<option value="acquired-4" ' + (getTaskStatus(section.id, index) === 'acquired-4' ? 'selected' : '') + '>Acquis 4/5</option>' +
-                                            '<option value="acquired-5" ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'selected' : '') + '>Acquis 5/5</option>' +
-                                        '</select>' +
+                                        acquisHtml +
                                     '</div>' +
                                 '</div>' +
                                 historyHtml +
