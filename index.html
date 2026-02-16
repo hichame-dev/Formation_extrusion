@@ -303,7 +303,7 @@
                 <img id="logoImage" src="asset/logo_gemef_galble_03.png" alt="Logo GEMEF" style="display: block;">
             </div>
             <div class="header-title">
-                <h1>Formation Poste Extrusion</h1>
+                <h1 id="headerTitle">Formation Poste Extrusion</h1>
                 <p>GEMEF Industries - Fiche de suivi des competences</p>
             </div>
         </div>
@@ -321,6 +321,14 @@
             </select>
             <button class="profile-btn" onclick="createProfile()">+ Nouveau</button>
             <button class="profile-btn danger" onclick="deleteProfile()">Supprimer</button>
+            <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
+            <label style="color: white; font-weight: 600;">Formation :</label>
+            <select id="formationSelect" class="profile-select" onchange="switchFormation()" style="min-width: 160px;">
+                <option value="extrusion">Extrusion</option>
+                <option value="conditionnement">Conditionnement</option>
+                <option value="melanges">Mélanges</option>
+                <option value="meunerie">Meunerie</option>
+            </select>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
             <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn">&#9729; Cloud Sync</button>
             <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
@@ -541,8 +549,10 @@
     </div>
 
     <script>
-        var formationData = {
-            sections: [
+        var currentFormation = localStorage.getItem('gemef-current-formation') || 'extrusion';
+
+        var allFormations = {
+            extrusion: { title: "Formation Poste Extrusion", sections: [
                 // DEBUT - Sécurité & Connaissances de base
                 { id: 1, title: "Sécurité / Prérequis / Contrôles préalables", tasks: [
                     "Présentation générale de l'atelier (personnel, fonctionnement)",
@@ -684,8 +694,13 @@
                     "Contrôle usure de vis",
                     "Installer, monter et démonter élément de vis"
                 ]}
-            ]
+            ]},
+            conditionnement: { title: "Formation Poste Conditionnement", sections: [] },
+            melanges: { title: "Formation Poste Mélanges", sections: [] },
+            meunerie: { title: "Formation Poste Meunerie", sections: [] }
         };
+
+        var formationData = allFormations[currentFormation];
 
         var taskStatus = {};
         var taskHistory = {};
@@ -698,6 +713,10 @@
         var cloudConfig = JSON.parse(localStorage.getItem('gemef-cloud-config') || 'null');
 
         document.addEventListener('DOMContentLoaded', async function() {
+            // Initialiser le sélecteur de formation
+            document.getElementById('formationSelect').value = currentFormation;
+            document.getElementById('headerTitle').textContent = formationData.title;
+
             // Charger depuis le cloud si configure
             if (cloudConfig && cloudConfig.apiKey && cloudConfig.binId) {
                 await loadFromCloud();
@@ -706,7 +725,11 @@
             }
             loadProfiles();
             loadData();
-            renderSections();
+            if (formationData.sections.length === 0) {
+                document.getElementById('sectionsContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: #888; font-size: 18px;">Cette formation est en cours de construction.</div>';
+            } else {
+                renderSections();
+            }
             updateProgress();
             setupAutoSave();
             initSignatureCanvases();
@@ -791,6 +814,21 @@
 
             closeProfileModal();
             location.reload();
+        }
+
+        function switchFormation() {
+            var select = document.getElementById('formationSelect');
+            currentFormation = select.value;
+            localStorage.setItem('gemef-current-formation', currentFormation);
+            formationData = allFormations[currentFormation];
+            document.getElementById('headerTitle').textContent = formationData.title;
+            if (formationData.sections.length === 0) {
+                document.getElementById('sectionsContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: #888; font-size: 18px;">Cette formation est en cours de construction.</div>';
+                updateStats();
+            } else {
+                renderSections();
+                updateStats();
+            }
         }
 
         function switchProfile() {
