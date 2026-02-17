@@ -1378,7 +1378,8 @@
                         section.tasks.map(function(task, index) {
                             var history = getTaskHistory(section.id, index);
                             var historyHtml = history ? '<div class="task-history">Modifie le ' + history + '</div>' : '';
-                            var isDirectAcquis = (section.id === 16 || section.id === 19); // Sections 16 et 19 = Acquis direct 5/5
+                            var isDirectAcquis = (section.id === 16 || section.id === 18 || section.id === 19); // Sections 16, 18, 19 = Acquis direct
+                            var hideEnCours = (section.id === 18); // Section 18 = pas de "En cours"
                             var acquisHtml = '';
                             if (isDirectAcquis) {
                                 acquisHtml = '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired-3\')">Acquis</button>';
@@ -1390,12 +1391,13 @@
                                     '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/3</option>' +
                                 '</select>';
                             }
+                            var enCoursHtml = hideEnCours ? '' : '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>';
                             return '<div class="task">' +
                                 '<div class="task-main">' +
                                     '<div class="task-text">' + task + '</div>' +
                                     '<div class="task-status">' +
                                         '<button class="status-btn pending ' + (getTaskStatus(section.id, index) === 'pending' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'pending\')">A acquerir</button>' +
-                                        '<button class="status-btn progress ' + (getTaskStatus(section.id, index) === 'progress' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'progress\')">En cours</button>' +
+                                        enCoursHtml +
                                         acquisHtml +
                                     '</div>' +
                                 '</div>' +
