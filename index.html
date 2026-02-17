@@ -892,7 +892,7 @@
                     var status = taskStatus[section.id + '-' + index] || '';
                     if (status.startsWith('acquired')) {
                         var level = parseInt(status.split('-')[1]) || 1;
-                        totalPercent += level * 20;
+                        totalPercent += Math.round(level * 100 / 3); // 1=33%, 2=67%, 3=100%
                     }
                 });
             });
@@ -1381,15 +1381,13 @@
                             var isDirectAcquis = (section.id === 16 || section.id === 19); // Sections 16 et 19 = Acquis direct 5/5
                             var acquisHtml = '';
                             if (isDirectAcquis) {
-                                acquisHtml = '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired-5\')">Acquis</button>';
+                                acquisHtml = '<button class="status-btn acquired ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'active' : '') + '" onclick="setStatus(' + section.id + ', ' + index + ', \'acquired-3\')">Acquis</button>';
                             } else {
                                 acquisHtml = '<select class="acquis-select ' + (getTaskStatus(section.id, index).startsWith('acquired') ? 'active' : '') + '" onchange="setAcquisLevel(' + section.id + ', ' + index + ', this.value)">' +
                                     '<option value="">Acquis</option>' +
-                                    '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/5</option>' +
-                                    '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/5</option>' +
-                                    '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/5</option>' +
-                                    '<option value="acquired-4" ' + (getTaskStatus(section.id, index) === 'acquired-4' ? 'selected' : '') + '>Acquis 4/5</option>' +
-                                    '<option value="acquired-5" ' + (getTaskStatus(section.id, index) === 'acquired-5' ? 'selected' : '') + '>Acquis 5/5</option>' +
+                                    '<option value="acquired-1" ' + (getTaskStatus(section.id, index) === 'acquired-1' ? 'selected' : '') + '>Acquis 1/3</option>' +
+                                    '<option value="acquired-2" ' + (getTaskStatus(section.id, index) === 'acquired-2' ? 'selected' : '') + '>Acquis 2/3</option>' +
+                                    '<option value="acquired-3" ' + (getTaskStatus(section.id, index) === 'acquired-3' ? 'selected' : '') + '>Acquis 3/3</option>' +
                                 '</select>';
                             }
                             return '<div class="task">' +
@@ -1494,7 +1492,7 @@
         function getAcquisPercentage(status) {
             if (!status || !status.startsWith('acquired')) return 0;
             var level = parseInt(status.split('-')[1]) || 1;
-            return level * 20; // 1=20%, 2=40%, 3=60%, 4=80%, 5=100%
+            return Math.round(level * 100 / 3); // 1=33%, 2=67%, 3=100%
         }
 
         function calculateSectionProgress(sectionId) {
