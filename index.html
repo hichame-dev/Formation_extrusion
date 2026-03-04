@@ -748,127 +748,59 @@
                 ]}
             ]},
             conditionnement: { title: "Formation Poste Conditionnement", sections: [
-                // DEBUT - Sécurité & Connaissances de base
                 { id: 1, title: "Sécurité / Prérequis / Contrôles préalables", tasks: [
                     "Présentation générale de l'atelier (personnel, fonctionnement)",
                     "Sens d'évacuation et issues de secours",
                     "Emplacement des différents arrêts d'urgence",
-                    "Règles de sécurité : conduite chariot (si CACES) + manipulations MP + utilisation outils"
+                    "Règles de sécurité à respecter lors de la conduite d'un chariot (si CACES)",
+                    "Sens de circulation, présentation du magasin, zones de stockage"
                 ]},
-                { id: 2, title: "Sécurité Alimentaire / Hygiène", tasks: [
-                    "Respecter les règles d'hygiène personnelle (tenue de travail propre, lavage des mains, port des EPI adéquats)",
-                    "Respecter les bonnes pratiques de fabrication alimentaire",
-                    "Identifier et gérer les risques liés aux allergènes (procédures de nettoyage, séparation des productions)",
-                    "Prévenir les contaminations par corps étrangers (verre, métal, plastique dur)",
-                    "Signaler toute non-conformité pouvant affecter la sécurité alimentaire",
-                    "Respecter les procédures de nettoyage et désinfection spécifiques aux zones alimentaires"
+                { id: 2, title: "Contrôles de démarrage à la prise de poste", tasks: [
+                    "Contrôler la concordance : N° de lot, code article, types de BB et palettes",
+                    "Contrôler la concordance : Marquage cartons, DLUO",
+                    "Contrôler le poids d'un carton",
+                    "Contrôler la soudure d'une sache",
+                    "Remplissage de la feuille de poste"
                 ]},
-                { id: 3, title: "Lecture d'un OF / Bon de travail", tasks: [
-                    "Chercher les informations liées à la production (code article, bon de travail)",
-                    "Identifier les informations essentielles d'un OF (numéro, référence produit, quantité)",
-                    "Lire et comprendre les spécifications techniques (format d'emballage, poids, type de sac)",
-                    "Identifier le produit à conditionner et ses caractéristiques",
-                    "Comprendre les instructions particulières et les remarques client",
-                    "Vérifier la cohérence entre l'OF et les produits disponibles",
-                    "Renseigner correctement les informations de suivi de production sur l'OF",
-                    "Renseigner correctement la check-list de suivi de production à faire valider par le chef de poste"
+                { id: 3, title: "Démarrage d'un OF", tasks: [
+                    "Saisie informatique de l'OF",
+                    "Édition et contrôle des étiquettes palettes",
+                    "Remplissage des feuilles de postes",
+                    "Saisie robot, concordance pose intercalaires",
+                    "Préparation des prises échantillons"
                 ]},
-                { id: 4, title: "Connaissance Générale", tasks: [
-                    "Connaître les différents types de produits conditionnés et leurs spécificités",
-                    "Comprendre le flux de production du conditionnement (réception produit extrusion → ensachage → palettisation → expédition)",
-                    "Connaître le rôle du laboratoire et de la R&D"
+                { id: 4, title: "Contrôles en cours de poste / Qualité", tasks: [
+                    "Réaliser les tests DPM et actions en cas de non conformité",
+                    "Effectuer le contrôle des barreaux aimantés (analyse des rejets)",
+                    "Vérifier la soudure des saches",
+                    "Prélever et contrôler les échantillons vs témoins",
+                    "Effectuer les prélèvements Gluten Free / Baby Food",
+                    "Contrôle de la palettisation / pose étiquette de validation",
+                    "Réglage d'un poids",
+                    "Préparer les documents de fabrication pour l'équipe montante",
+                    "Identifier et isoler les produits NC"
                 ]},
-                // MILIEU - Opérationnel / Physique
-                { id: 5, title: "Préparer les installations", tasks: [
-                    "Monter les bobines de film/sacs sur l'ensacheuse",
-                    "S'assurer de la disponibilité des consommables (sacs, étiquettes, palettes, film étirable)",
-                    "Préparer la palettiseuse",
-                    "Vérifier le fonctionnement du détecteur de métaux et du tamiseur"
+                { id: 5, title: "Gestion de l'atelier", tasks: [
+                    "Alimenter la machine à cartons",
+                    "Veiller au flux continu des cartons sur la ligne",
+                    "Savoir changer un rouleau d'étiquettes",
+                    "Savoir changer une bobine de saches",
+                    "Nettoyer la tête de la domino",
+                    "Gestion des palettes de VA",
+                    "Mise en rack des BB et palettes produits finis selon instructions"
                 ]},
-                { id: 6, title: "Démarrer les installations", tasks: [
-                    "Contrôler la propreté de la ligne de conditionnement",
-                    "Démarrer l'ensacheuse et vérifier les premiers sacs",
-                    "Démarrer la peseuse et vérifier la conformité des poids",
-                    "Démarrer la palettiseuse",
-                    "Vérifier le fonctionnement de l'étiqueteuse",
-                    "Connaître et gérer les alarmes"
-                ]},
-                { id: 7, title: "Piloter les installations", tasks: [
-                    "Surveiller le bon déroulement du conditionnement",
-                    "Alimenter régulièrement la trémie en produit",
-                    "Changer les bobines de film/sacs",
-                    "Surveiller la qualité des soudures",
-                    "Gérer les changements de produit/format"
-                ]},
-                { id: 8, title: "Superviser les lignes", tasks: [
-                    "Surveiller l'ensemble de la ligne de conditionnement",
-                    "Anticiper les besoins en consommables",
-                    "Réagir aux arrêts machine et redémarrer la ligne"
-                ]},
-                { id: 9, title: "Régler les installations", tasks: [
-                    "Régler la peseuse (tare, poids cible, tolérances)",
-                    "Régler la palettiseuse selon le schéma de palettisation",
-                    "Régler le détecteur de métaux",
-                    "Régler la température de soudure",
-                    "Régler l'étiqueteuse (position, contenu)"
-                ]},
-                { id: 10, title: "Contrôles en cours de poste / Qualité", tasks: [
-                    "Contrôler le poids des sacs aux fréquences définies",
-                    "Contrôler la qualité des soudures (étanchéité)",
-                    "Vérifier la conformité de l'étiquetage (lot, DLC, poids)",
-                    "Contrôler l'aspect visuel du produit conditionné",
-                    "Enregistrer les résultats des contrôles sur les fiches d'auto-contrôles",
-                    "Décider de la conformité d'un produit et de sa destination",
-                    "Connaître les règles qualité en vigueur au sein du Conditionnement",
-                    "Appliquer les différents protocoles de conditionnement"
-                ]},
-                { id: 11, title: "Gérer les outillages", tasks: [
-                    "Réceptionner et vérifier les pièces de rechange"
-                ]},
-                { id: 12, title: "Assurer le bon état technique des installations", tasks: [
-                    "Remplir une feuille de Demande d'Intervention (DI)",
-                    "Identifier une panne et signaler le défaut",
-                    "Identifier une panne et demander ou réaliser une intervention adaptée"
-                ]},
-                { id: 13, title: "Nettoyer / Ranger", tasks: [
-                    "Nettoyer les différentes installations en fonction des procédures en place",
-                    "Nettoyer les sols",
-                    "Vider les différentes poubelles",
-                    "Ranger l'atelier (aspirateur, balais, pelles ...)",
-                    "Participer au nettoyage de fin de semaine",
-                    "S'assurer qu'aucun produit résiduel de la production précédente ne subsiste sur la ligne",
-                    "Effectuer le nettoyage de l'ensacheuse et de la peseuse",
-                    "Nettoyer la palettiseuse et la zone de palettisation"
-                ]},
-                // FIN - Coordination & Comportement
-                { id: 14, title: "Coordonner l'activité", tasks: [
-                    "Suivre les stocks de consommables (sacs, film, étiquettes, palettes)",
-                    "Approvisionner le matériel et consommables hygiène et nettoyage",
-                    "Consulter et mettre à jour le planning Excel"
-                ]},
-                { id: 15, title: "Transmettre les informations", tasks: [
-                    "Remplir les fiches de production",
-                    "Remplir les fiches de NC et les transmettre",
-                    "Isoler et identifier un produit NC",
-                    "Savoir effectuer une passation de consignes entre 2 postes"
-                ]},
-                { id: 16, title: "Maintenir ses connaissances", tasks: [
-                    "Utiliser les instructions techniques disponibles",
-                    "Appliquer et participer à l'évolution des procédures",
-                    "Faire des propositions d'amélioration"
-                ]},
-                { id: 17, title: "Comportement / Attitudes", tasks: [
-                    "Signaler tout dysfonctionnement aux services compétents : Maintenance si défaut machines, Magasin si rupture matières, CDP si produits non conforme",
-                    "Signaler à ses collègues tout départ du poste (pause, administratif, etc.)",
+                { id: 6, title: "Comportement / Attitudes", tasks: [
+                    "Signaler tout dysfonctionnement : Maintenance si défaut machines",
+                    "Signaler tout dysfonctionnement : Magasin si rupture matières (cartons, saches, protège BB…)",
+                    "Signaler tout dysfonctionnement : CDP si produits non conforme ou erreur conditionnement",
+                    "Signaler à ses collègues tout départ du poste (pause, administratif…)",
                     "Apporter son aide à ses collègues en cas de surcharge de travail"
                 ]},
-                { id: 18, title: "Validation Formation", tasks: [
-                    "Réaliser un conditionnement complet de A à Z",
-                    "Gérer un changement de format/produit",
-                    "Effectuer une passation de consignes"
-                ]},
-                { id: 19, title: "Connaissance validée par formation externe", tasks: [
-                    "Formation hygiène et sécurité alimentaire"
+                { id: 7, title: "Nettoyer / Ranger", tasks: [
+                    "Nettoyer les sols",
+                    "Vider les différentes poubelles",
+                    "Ranger l'atelier (aspirateur, balais, pelles…)",
+                    "Participer au nettoyage de fin de semaine"
                 ]}
             ]},
             melanges: { title: "Formation Poste Mélanges", sections: [] },
