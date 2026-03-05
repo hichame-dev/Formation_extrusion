@@ -940,25 +940,16 @@
 
         function loadProfiles() {
             var allProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-            // Filtrer par formation courante (les anciens profils sans formation restent visibles partout)
+            // Filtrer par formation courante
             var profiles = allProfiles.filter(function(p) {
                 return !p.formation || p.formation === currentFormation;
             });
             var select = document.getElementById('profileSelect');
             select.innerHTML = '<option value="">-- Selectionner un profil --</option>';
-            var myUsername = (cloudConfig && cloudConfig.username) ? cloudConfig.username : null;
             profiles.forEach(function(profile) {
                 var option = document.createElement('option');
                 option.value = profile.id;
-                var label = profile.name;
-                if (myUsername && profile.owner) {
-                    if (profile.owner === myUsername) {
-                        label += ' (vous)';
-                    } else {
-                        label += ' [' + profile.owner + ']';
-                    }
-                }
-                option.textContent = label;
+                option.textContent = profile.name;
                 select.appendChild(option);
             });
             // Selectionner le dernier profil utilise
