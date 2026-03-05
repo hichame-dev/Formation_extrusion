@@ -896,7 +896,28 @@
                 await loadFromCloud();
                 document.getElementById('cloudStatus').textContent = '● ' + (cloudConfig.username || 'Cloud');
                 document.getElementById('cloudStatus').style.color = '#90EE90';
+            } else {
+                // Sans connexion cloud, supprimer les profils locaux (protection des donnees)
+                var oldProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                oldProfiles.forEach(function(p) {
+                    localStorage.removeItem('gemef-formation-' + p.id);
+                });
+                localStorage.removeItem('gemef-profiles');
             }
+
+            // Migration : assigner owner et formation aux anciens profils (après chargement cloud)
+            var migrateProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var needsMigration = false;
+            migrateProfiles.forEach(function(p) {
+                if (!p.owner) { p.owner = 'hichame13'; needsMigration = true; }
+                if (!p.formation) { p.formation = 'extrusion'; needsMigration = true; }
+            });
+            if (needsMigration) {
+                localStorage.setItem('gemef-profiles', JSON.stringify(migrateProfiles));
+                // Aussi sauvegarder dans le cloud pour propager la migration
+                if (cloudConfig && cloudConfig.apiKey) await saveToCloud();
+            }
+
             loadProfiles();
             loadData();
             checkReadOnly();
@@ -918,7 +939,11 @@
         }
 
         function loadProfiles() {
-            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var allProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            // Filtrer par formation courante (les anciens profils sans formation restent visibles partout)
+            var profiles = allProfiles.filter(function(p) {
+                return !p.formation || p.formation === currentFormation;
+            });
             var select = document.getElementById('profileSelect');
             select.innerHTML = '<option value="">-- Selectionner un profil --</option>';
             var myUsername = (cloudConfig && cloudConfig.username) ? cloudConfig.username : null;
@@ -974,7 +999,7 @@
 
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var owner = (cloudConfig && cloudConfig.username) ? cloudConfig.username : null;
-            profiles.push({ id: profileId, name: profileName, progress: 0, fileName: fileName, owner: owner });
+            profiles.push({ id: profileId, name: profileName, progress: 0, fileName: fileName, owner: owner, formation: currentFormation });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
 
             // Initialiser les donnees du profil
@@ -1009,13 +1034,20 @@
             applyFormationTheme(currentFormation);
             formationData = allFormations[currentFormation];
             document.getElementById('headerTitle').textContent = formationData.title;
+
+            // Recharger les profils filtrés par formation et réinitialiser la sélection
+            currentProfile = null;
+            localStorage.removeItem('gemef-last-profile');
+            taskStatus = {};
+            taskHistory = {};
+            loadProfiles();
+
             if (formationData.sections.length === 0) {
                 document.getElementById('sectionsContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: #888; font-size: 18px;">Cette formation est en cours de construction.</div>';
-                updateProgress();
             } else {
                 renderSections();
-                updateProgress();
             }
+            updateProgress();
         }
 
         function switchProfile() {
@@ -1211,11 +1243,18 @@
         }
 
         function disconnectCloud() {
+            // Supprimer les donnees locales des profils
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            profiles.forEach(function(p) {
+                localStorage.removeItem('gemef-formation-' + p.id);
+            });
+            localStorage.removeItem('gemef-profiles');
             cloudConfig = null;
             localStorage.removeItem('gemef-cloud-config');
             document.getElementById('cloudStatus').textContent = '';
             closeCloudModal();
-            showAlert('Deconnecte du cloud. Les donnees locales sont conservees.', 'Deconnexion', 'success');
+            showAlert('Deconnecte du cloud. Les donnees locales ont ete supprimees.', 'Deconnexion', 'success');
+            location.reload();
         }
 
         async function loadFromCloud() {
