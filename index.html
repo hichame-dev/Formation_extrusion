@@ -527,7 +527,12 @@
             </div>
             <div class="modal-body">
                 <div id="cloudSetup">
-                    <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Synchronisez les profils entre tous les utilisateurs via le cloud.</p>
+                    <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Synchronisez les profils entre tous les utilisateurs via le cloud. Chaque utilisateur a son propre compte et ne peut modifier que ses profils.</p>
+                    <div class="modal-field">
+                        <label for="cloudUsername">Votre nom d'utilisateur</label>
+                        <input type="text" id="cloudUsername" placeholder="Ex: jean-dupont" autocomplete="off" style="border-color: #6366F1;">
+                        <p style="color: #888; font-size: 11px; margin-top: 5px;">Choisissez un identifiant unique. Vous ne pourrez modifier que les profils crees avec ce nom.</p>
+                    </div>
                     <div class="modal-field">
                         <label for="jsonbinApiKey">Cle API (X-Master-Key)</label>
                         <input type="password" id="jsonbinApiKey" placeholder="$2a$10$..." autocomplete="off">
@@ -539,13 +544,16 @@
                     <p style="color: #888; font-size: 11px; margin-top: 10px;">
                         1. Creez un compte sur <a href="https://jsonbin.io" target="_blank" style="color: #6366F1;">jsonbin.io</a><br>
                         2. Copiez votre X-Master-Key depuis les parametres<br>
-                        3. Cliquez sur Connecter
+                        3. Entrez votre nom d'utilisateur unique<br>
+                        4. Cliquez sur Connecter
                     </p>
                 </div>
                 <div id="cloudConnected" style="display: none; text-align: center;">
                     <p style="color: #27AE60; font-size: 18px; margin-bottom: 10px;">&#10003; Connecte au cloud</p>
                     <p style="color: #666; font-size: 13px;">Les profils sont synchronises automatiquement.</p>
-                    <p style="color: #888; font-size: 11px; margin-top: 15px;">Bin ID: <code id="displayBinId" style="background: #f0f0f0; padding: 2px 6px; border-radius: 4px;"></code></p>
+                    <p style="color: #6366F1; font-size: 14px; margin-top: 10px; font-weight: 600;">Utilisateur : <span id="displayUsername"></span></p>
+                    <p style="color: #888; font-size: 11px; margin-top: 10px;">Bin ID: <code id="displayBinId" style="background: #f0f0f0; padding: 2px 6px; border-radius: 4px;"></code></p>
+                    <p style="color: #888; font-size: 11px; margin-top: 8px;">Vous ne pouvez modifier que les profils que vous avez crees.<br>Les profils des autres utilisateurs sont en lecture seule.</p>
                 </div>
             </div>
             <div class="modal-actions">
@@ -818,6 +826,65 @@
 
         // JSONBin.io Cloud Config
         var cloudConfig = JSON.parse(localStorage.getItem('gemef-cloud-config') || 'null');
+        var isReadOnly = false;
+
+        function checkReadOnly() {
+            if (!cloudConfig || !cloudConfig.username || !currentProfile) {
+                isReadOnly = false;
+                return;
+            }
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var profile = profiles.find(function(p) { return p.id === currentProfile; });
+            if (profile && profile.owner && profile.owner !== cloudConfig.username) {
+                isReadOnly = true;
+            } else {
+                isReadOnly = false;
+            }
+        }
+
+        function applyReadOnlyMode() {
+            if (!isReadOnly) return;
+
+            // Desactiver tous les boutons de statut
+            document.querySelectorAll('.status-btn').forEach(function(btn) {
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.6';
+            });
+            document.querySelectorAll('.acquis-select').forEach(function(sel) {
+                sel.disabled = true;
+                sel.style.opacity = '0.6';
+            });
+
+            // Desactiver les champs de saisie
+            document.querySelectorAll('.info-value input, .comments-section textarea, .signature-field input').forEach(function(input) {
+                input.readOnly = true;
+                input.style.opacity = '0.7';
+                input.style.cursor = 'not-allowed';
+            });
+
+            // Desactiver les signatures
+            document.querySelectorAll('.signature-canvas').forEach(function(canvas) {
+                canvas.style.pointerEvents = 'none';
+                canvas.style.opacity = '0.7';
+            });
+            document.querySelectorAll('.clear-signature').forEach(function(btn) {
+                btn.style.display = 'none';
+            });
+
+            // Afficher le bandeau lecture seule
+            var banner = document.createElement('div');
+            banner.id = 'readOnlyBanner';
+            banner.style.cssText = 'background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%); color: white; text-align: center; padding: 10px 20px; font-weight: 600; font-size: 14px; border-radius: 8px; margin-bottom: 15px;';
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var profile = profiles.find(function(p) { return p.id === currentProfile; });
+            var ownerName = profile ? profile.owner : 'un autre utilisateur';
+            banner.innerHTML = '&#128274; Mode lecture seule - Ce profil appartient a <strong>' + ownerName + '</strong>';
+            var container = document.querySelector('.container');
+            container.insertBefore(banner, container.querySelector('.progress-overview'));
+
+            // Masquer les boutons Reinitialiser et Supprimer pour ce profil
+            document.querySelector('.header-actions .btn-secondary').style.display = 'none';
+        }
 
         document.addEventListener('DOMContentLoaded', async function() {
             // Initialiser le sélecteur de formation
@@ -827,11 +894,12 @@
             // Charger depuis le cloud si configure
             if (cloudConfig && cloudConfig.apiKey && cloudConfig.binId) {
                 await loadFromCloud();
-                document.getElementById('cloudStatus').textContent = '● Cloud';
+                document.getElementById('cloudStatus').textContent = '● ' + (cloudConfig.username || 'Cloud');
                 document.getElementById('cloudStatus').style.color = '#90EE90';
             }
             loadProfiles();
             loadData();
+            checkReadOnly();
             if (formationData.sections.length === 0) {
                 document.getElementById('sectionsContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: #888; font-size: 18px;">Cette formation est en cours de construction.</div>';
             } else {
@@ -840,6 +908,7 @@
             updateProgress();
             setupAutoSave();
             initSignatureCanvases();
+            applyReadOnlyMode();
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR');
         });
 
@@ -852,10 +921,19 @@
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var select = document.getElementById('profileSelect');
             select.innerHTML = '<option value="">-- Selectionner un profil --</option>';
+            var myUsername = (cloudConfig && cloudConfig.username) ? cloudConfig.username : null;
             profiles.forEach(function(profile) {
                 var option = document.createElement('option');
                 option.value = profile.id;
-                option.textContent = profile.name;
+                var label = profile.name;
+                if (myUsername && profile.owner) {
+                    if (profile.owner === myUsername) {
+                        label += ' (vous)';
+                    } else {
+                        label += ' [' + profile.owner + ']';
+                    }
+                }
+                option.textContent = label;
                 select.appendChild(option);
             });
             // Selectionner le dernier profil utilise
@@ -895,7 +973,8 @@
             var fileName = profileName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.json';
 
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-            profiles.push({ id: profileId, name: profileName, progress: 0, fileName: fileName });
+            var owner = (cloudConfig && cloudConfig.username) ? cloudConfig.username : null;
+            profiles.push({ id: profileId, name: profileName, progress: 0, fileName: fileName, owner: owner });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
 
             // Initialiser les donnees du profil
@@ -956,6 +1035,10 @@
         function deleteProfile() {
             if (!currentProfile) {
                 showAlert('Veuillez d\'abord selectionner un profil', 'Aucun profil', 'warning');
+                return;
+            }
+            if (isReadOnly) {
+                showAlert('Vous ne pouvez pas supprimer un profil qui ne vous appartient pas.', 'Acces refuse', 'error');
                 return;
             }
 
@@ -1019,6 +1102,7 @@
                 document.getElementById('cloudSetup').style.display = 'none';
                 document.getElementById('cloudConnected').style.display = 'block';
                 document.getElementById('displayBinId').textContent = cloudConfig.binId;
+                document.getElementById('displayUsername').textContent = cloudConfig.username || '(inconnu)';
                 document.getElementById('cloudConnectBtn').style.display = 'none';
                 document.getElementById('cloudDisconnectBtn').style.display = 'inline-flex';
             } else {
@@ -1030,6 +1114,7 @@
                 if (cloudConfig && cloudConfig.apiKey) {
                     document.getElementById('jsonbinApiKey').value = cloudConfig.apiKey;
                     document.getElementById('jsonbinBinId').value = cloudConfig.binId || '';
+                    document.getElementById('cloudUsername').value = cloudConfig.username || '';
                 }
             }
             modal.classList.add('show');
@@ -1040,9 +1125,14 @@
         }
 
         async function connectCloud() {
+            var username = document.getElementById('cloudUsername').value.trim();
             var apiKey = document.getElementById('jsonbinApiKey').value.trim();
             var binId = document.getElementById('jsonbinBinId').value.trim();
 
+            if (!username) {
+                showAlert('Veuillez entrer votre nom d\'utilisateur', 'Nom requis', 'warning');
+                return;
+            }
             if (!apiKey) {
                 showAlert('Veuillez entrer votre cle API JSONBin.io', 'Cle requise', 'warning');
                 return;
@@ -1069,14 +1159,21 @@
                     }
                 } else {
                     // Creer un nouveau bin
+                    var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                    // Taguer les profils existants avec le owner
+                    profiles = profiles.map(function(p) {
+                        if (!p.owner) p.owner = username;
+                        return p;
+                    });
+                    localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+
                     var initialData = {
-                        profiles: JSON.parse(localStorage.getItem('gemef-profiles') || '[]'),
+                        profiles: profiles,
                         profilesData: {},
                         created: new Date().toISOString()
                     };
 
                     // Recuperer toutes les donnees de profils existantes
-                    var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
                     profiles.forEach(function(p) {
                         var data = localStorage.getItem('gemef-formation-' + p.id);
                         if (data) initialData.profilesData['gemef-formation-' + p.id] = JSON.parse(data);
@@ -1097,15 +1194,15 @@
                     binId = result.metadata.id;
                 }
 
-                // Sauvegarder la config
-                cloudConfig = { apiKey: apiKey, binId: binId };
+                // Sauvegarder la config avec le username
+                cloudConfig = { apiKey: apiKey, binId: binId, username: username };
                 localStorage.setItem('gemef-cloud-config', JSON.stringify(cloudConfig));
 
-                document.getElementById('cloudStatus').textContent = '● Cloud';
+                document.getElementById('cloudStatus').textContent = '● ' + username;
                 document.getElementById('cloudStatus').style.color = '#90EE90';
 
                 closeCloudModal();
-                showAlert('Connecte au cloud ! Bin ID: ' + binId, 'Connexion reussie', 'success');
+                showAlert('Connecte au cloud en tant que "' + username + '" ! Bin ID: ' + binId, 'Connexion reussie', 'success');
                 location.reload();
             } catch (err) {
                 console.error('Erreur connexion cloud:', err);
@@ -1150,18 +1247,52 @@
             if (!cloudConfig || !cloudConfig.apiKey || !cloudConfig.binId) return;
 
             try {
-                var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-                var profilesData = {};
+                // Charger d'abord les donnees actuelles du cloud pour ne pas ecraser les profils des autres
+                var currentCloudData = { profiles: [], profilesData: {} };
+                try {
+                    var getResponse = await fetch('https://api.jsonbin.io/v3/b/' + cloudConfig.binId + '/latest', {
+                        headers: { 'X-Master-Key': cloudConfig.apiKey }
+                    });
+                    if (getResponse.ok) {
+                        var getResult = await getResponse.json();
+                        if (getResult.record) currentCloudData = getResult.record;
+                    }
+                } catch (e) { /* ignore, on ecrasera */ }
 
-                profiles.forEach(function(p) {
-                    var data = localStorage.getItem('gemef-formation-' + p.id);
-                    if (data) profilesData['gemef-formation-' + p.id] = JSON.parse(data);
+                var myUsername = cloudConfig.username;
+                var localProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+
+                // Garder les profils des AUTRES utilisateurs depuis le cloud
+                var otherProfiles = (currentCloudData.profiles || []).filter(function(p) {
+                    return p.owner && p.owner !== myUsername;
+                });
+                var otherProfilesData = {};
+                otherProfiles.forEach(function(p) {
+                    var key = 'gemef-formation-' + p.id;
+                    if (currentCloudData.profilesData && currentCloudData.profilesData[key]) {
+                        otherProfilesData[key] = currentCloudData.profilesData[key];
+                    }
                 });
 
+                // Mes profils locaux
+                var myProfiles = localProfiles.filter(function(p) {
+                    return !p.owner || p.owner === myUsername;
+                });
+                var myProfilesData = {};
+                myProfiles.forEach(function(p) {
+                    var data = localStorage.getItem('gemef-formation-' + p.id);
+                    if (data) myProfilesData['gemef-formation-' + p.id] = JSON.parse(data);
+                });
+
+                // Fusionner
+                var mergedProfiles = otherProfiles.concat(myProfiles);
+                var mergedProfilesData = Object.assign({}, otherProfilesData, myProfilesData);
+
                 var cloudData = {
-                    profiles: profiles,
-                    profilesData: profilesData,
-                    lastUpdated: new Date().toISOString()
+                    profiles: mergedProfiles,
+                    profilesData: mergedProfilesData,
+                    lastUpdated: new Date().toISOString(),
+                    lastUpdatedBy: myUsername
                 };
 
                 await fetch('https://api.jsonbin.io/v3/b/' + cloudConfig.binId, {
@@ -1172,7 +1303,7 @@
                     },
                     body: JSON.stringify(cloudData)
                 });
-                console.log('Sauvegarde cloud OK');
+                console.log('Sauvegarde cloud OK par ' + myUsername);
             } catch (err) {
                 console.error('Erreur sauvegarde cloud:', err);
             }
@@ -1529,6 +1660,7 @@
         function getTaskHistory(sectionId, taskIndex) { return taskHistory[sectionId + '-' + taskIndex] || ''; }
 
         function setStatus(sectionId, taskIndex, status) {
+            if (isReadOnly) return;
             var key = sectionId + '-' + taskIndex;
             var oldStatus = taskStatus[key] || 'pending';
 
@@ -1568,6 +1700,7 @@
         }
 
         function setAcquisLevel(sectionId, taskIndex, level) {
+            if (isReadOnly) return;
             if (!level) return; // Si on selectionne l'option vide
 
             var key = sectionId + '-' + taskIndex;
@@ -1650,6 +1783,7 @@
         }
 
         function saveData() {
+            if (isReadOnly) return;
             var signatures = {};
             ['signatureTuteur', 'signatureEleve', 'signatureChef'].forEach(function(id) {
                 var canvas = document.getElementById(id);
@@ -1763,6 +1897,10 @@
         function resetData() {
             if (!currentProfile) {
                 showAlert('Veuillez d\'abord selectionner un profil', 'Aucun profil', 'warning');
+                return;
+            }
+            if (isReadOnly) {
+                showAlert('Vous ne pouvez pas reinitialiser un profil qui ne vous appartient pas.', 'Acces refuse', 'error');
                 return;
             }
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
