@@ -127,6 +127,89 @@ Le pourcentage de progression prend en compte le niveau d'acquisition :
 
 ---
 
+## Panel Administrateur
+
+Le panel admin permet de modifier les sections et taches directement sur le site sans toucher au code.
+
+| Parametre | Valeur |
+|-----------|--------|
+| **Bouton** | "⚙ Admin" dans la barre de profils |
+| **Mot de passe par defaut** | `gemef2024` |
+
+Pour changer le mot de passe : ouvrir le panel Admin → se connecter → cliquer sur "Changer MDP".
+
+---
+
+## Migration vers un serveur interne (optionnel)
+
+### Migrer le site web (index.html)
+
+**Situation actuelle :** site heberge sur Netlify (gratuit, accessible depuis internet)
+
+**Si l'entreprise a un serveur intranet :**
+1. Copier le fichier `index.html` et le dossier `asset/` sur le serveur
+2. Placer dans le dossier web du serveur (ex: `C:\inetpub\wwwroot\formation\`)
+3. Acceder depuis le reseau interne via `http://[IP-SERVEUR]/formation`
+
+**Si l'entreprise veut un domaine pro (ex: formation.gemef.fr) :**
+- Prendre un hebergement OVH ou Ionos (~3-5€/mois)
+- Uploader `index.html` + dossier `asset/` via FTP
+- Configurer le domaine
+
+---
+
+### Migrer la base de donnees (JSONBin → serveur interne)
+
+**Situation actuelle :** donnees stockees sur JSONBin.io (cloud externe, gratuit)
+
+#### Option A — Serveur PHP (recommande, le plus simple)
+
+Demander a l'IT : *"Peut-on heberger 3 fichiers PHP sur le serveur intranet ?"*
+
+Creer ces 3 fichiers sur le serveur :
+
+**`data.json`** — fichier vide au depart :
+```json
+{}
+```
+
+**`load.php`** — lecture des donnees :
+```php
+<?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+$data = file_get_contents('data.json');
+echo $data ?: '{}';
+```
+
+**`save.php`** — ecriture des donnees :
+```php
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+$input = file_get_contents('php://input');
+if ($input) {
+    file_put_contents('data.json', $input);
+    echo '{"ok": true}';
+} else {
+    http_response_code(400);
+    echo '{"error": "No data"}';
+}
+```
+
+Ensuite dans `index.html`, remplacer les URLs JSONBin par les URLs du serveur :
+- `https://api.jsonbin.io/v3/b/[BIN_ID]/latest` → `http://[IP-SERVEUR]/formation/load.php`
+- `https://api.jsonbin.io/v3/b/[BIN_ID]` (PUT) → `http://[IP-SERVEUR]/formation/save.php`
+- Supprimer les headers `X-Master-Key` dans les requetes fetch
+
+#### Option B — Base de donnees MySQL
+
+Demander a l'IT : *"Peut-on avoir une base MySQL et un acces PHP ?"*
+
+Cette option necessite plus de developpement (~3-5h). Contacter l'administrateur technique.
+
+---
+
 ## Support technique
 
 Pour toute modification du formulaire, contacter l'administrateur du repository GitHub.

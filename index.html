@@ -302,6 +302,31 @@
             .status-btn { flex: 1; padding: 10px 8px; font-size: 11px; }
             .filters-bar { justify-content: center; }
         }
+
+        /* ===== PANEL ADMIN ===== */
+        .admin-modal-content { max-width: 820px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; }
+        .admin-modal-content .modal-body { overflow-y: auto; flex: 1; max-height: 60vh; }
+        .admin-section-item { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+        .admin-section-header { display: flex; align-items: center; gap: 6px; padding: 10px 12px; background: #f5f5f5; }
+        .admin-section-title-text { flex: 1; font-weight: 600; font-size: 14px; color: #333; }
+        .admin-icon-btn { padding: 4px 8px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 700; transition: opacity 0.2s; white-space: nowrap; }
+        .admin-icon-btn:hover { opacity: 0.75; }
+        .admin-btn-edit { background: #3498DB; color: white; }
+        .admin-btn-delete { background: #E74C3C; color: white; }
+        .admin-btn-move { background: #7F8C8D; color: white; }
+        .admin-btn-green { background: #27AE60; color: white; }
+        .admin-tasks-list { padding: 8px 12px 12px; border-top: 1px solid #eee; }
+        .admin-task-item { display: flex; align-items: flex-start; gap: 6px; padding: 7px 0; border-bottom: 1px solid #f0f0f0; }
+        .admin-task-item:last-child { border-bottom: none; }
+        .admin-task-text { flex: 1; font-size: 13px; color: #555; line-height: 1.4; padding-top: 2px; }
+        .admin-input { width: 100%; padding: 8px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+        .admin-input:focus { outline: none; border-color: var(--gemef-primary); box-shadow: 0 0 0 2px var(--gemef-primary-shadow); }
+        .admin-formation-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .admin-tab { padding: 7px 15px; border: 2px solid #ddd; border-radius: 20px; background: white; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
+        .admin-tab.active { background: var(--gemef-primary); border-color: var(--gemef-primary); color: white; }
+        .admin-pass-box { text-align: center; padding: 15px 0 5px; }
+        .admin-pass-box p { color: #666; margin-bottom: 15px; font-size: 14px; }
+        .admin-pass-box .admin-input { max-width: 300px; margin: 0 auto; display: block; text-align: center; }
     </style>
 </head>
 <body>
@@ -340,6 +365,8 @@
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
             <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn">&#9729; Cloud Sync</button>
             <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
+            <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 6px;"></span>
+            <button class="profile-btn" onclick="showAdminModal()" style="border-color: #ff9999; color: #ffcccc;">&#9881; Admin</button>
         </div>
 
         <div class="progress-overview">
@@ -514,6 +541,37 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-primary" onclick="closeAlertModal()" style="flex: none; min-width: 120px;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Admin Panel -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal admin-modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);">
+                <h3>&#9881; Panel Administrateur</h3>
+                <p>Gestion des sections et taches de formation</p>
+            </div>
+            <div class="modal-body">
+                <!-- Ecran mot de passe -->
+                <div id="adminPasswordScreen">
+                    <div class="admin-pass-box">
+                        <p>Entrez le mot de passe administrateur pour acceder a l'edition des formations</p>
+                        <input type="password" id="adminPasswordInput" class="admin-input" placeholder="Mot de passe..." onkeydown="if(event.key==='Enter') adminLogin()">
+                    </div>
+                </div>
+                <!-- Ecran editeur -->
+                <div id="adminEditorScreen" style="display: none;">
+                    <div class="admin-formation-tabs" id="adminFormationTabs"></div>
+                    <div id="adminSectionsContainer"></div>
+                    <button class="btn btn-success" onclick="adminAddSection()" style="width: 100%; justify-content: center; margin-top: 10px;">+ Ajouter une section</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeAdminModal()">Fermer</button>
+                <button class="btn" id="adminLoginBtn" style="background:#E74C3C; color:white;" onclick="adminLogin()">Connexion</button>
+                <button class="btn btn-success" id="adminSaveBtn" style="display:none;" onclick="adminSaveFormation()">&#10003; Publier les modifications</button>
+                <button class="btn" id="adminChangePassBtn" style="display:none; background:#7F8C8D; color:white;" onclick="adminChangePassword()">Changer MDP</button>
             </div>
         </div>
     </div>
@@ -1267,6 +1325,19 @@
                             localStorage.setItem(key, JSON.stringify(result.record.profilesData[key]));
                         });
                     }
+                    // Charger les formations personnalisees par l'admin
+                    if (result.record.formations) {
+                        Object.keys(result.record.formations).forEach(function(key) {
+                            if (allFormations[key]) {
+                                allFormations[key] = result.record.formations[key];
+                            }
+                        });
+                        formationData = allFormations[currentFormation];
+                    }
+                    // Charger le mot de passe admin
+                    if (result.record.adminPassword) {
+                        localStorage.setItem('gemef-admin-password', result.record.adminPassword);
+                    }
                 }
             } catch (err) {
                 console.error('Erreur chargement cloud:', err);
@@ -1321,6 +1392,8 @@
                 var cloudData = {
                     profiles: mergedProfiles,
                     profilesData: mergedProfilesData,
+                    formations: allFormations,
+                    adminPassword: localStorage.getItem('gemef-admin-password') || 'gemef2024',
                     lastUpdated: new Date().toISOString(),
                     lastUpdatedBy: myUsername
                 };
@@ -1971,6 +2044,208 @@
             currentFilter = 'all';
             applyFilter();
             setTimeout(function() { window.print(); }, 300);
+        }
+
+        // ===== PANEL ADMIN =====
+        var adminAuthenticated = false;
+        var adminCurrentFormation = currentFormation;
+
+        function showAdminModal() {
+            adminAuthenticated = false;
+            document.getElementById('adminPasswordScreen').style.display = 'block';
+            document.getElementById('adminEditorScreen').style.display = 'none';
+            document.getElementById('adminLoginBtn').style.display = 'inline-flex';
+            document.getElementById('adminSaveBtn').style.display = 'none';
+            document.getElementById('adminChangePassBtn').style.display = 'none';
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminModal').classList.add('show');
+            setTimeout(function() { document.getElementById('adminPasswordInput').focus(); }, 150);
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('show');
+            adminAuthenticated = false;
+        }
+
+        function adminLogin() {
+            var input = document.getElementById('adminPasswordInput').value;
+            var storedPass = localStorage.getItem('gemef-admin-password') || 'gemef2024';
+            if (input === storedPass) {
+                adminAuthenticated = true;
+                document.getElementById('adminPasswordScreen').style.display = 'none';
+                document.getElementById('adminEditorScreen').style.display = 'block';
+                document.getElementById('adminLoginBtn').style.display = 'none';
+                document.getElementById('adminSaveBtn').style.display = 'inline-flex';
+                document.getElementById('adminChangePassBtn').style.display = 'inline-flex';
+                adminCurrentFormation = currentFormation;
+                renderAdminTabs();
+                renderAdminSections();
+            } else {
+                showAlert('Mot de passe incorrect', 'Acces refuse', 'error');
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('adminPasswordInput').focus();
+            }
+        }
+
+        function renderAdminTabs() {
+            var tabs = document.getElementById('adminFormationTabs');
+            var formations = ['extrusion', 'conditionnement', 'melanges', 'meunerie'];
+            var labels = { extrusion: 'Extrusion', conditionnement: 'Conditionnement', melanges: 'Melanges', meunerie: 'Meunerie' };
+            tabs.innerHTML = formations.map(function(f) {
+                return '<button class="admin-tab ' + (f === adminCurrentFormation ? 'active' : '') + '" onclick="adminSelectFormation(\'' + f + '\')">' + labels[f] + '</button>';
+            }).join('');
+        }
+
+        function adminSelectFormation(formation) {
+            adminCurrentFormation = formation;
+            renderAdminTabs();
+            renderAdminSections();
+        }
+
+        function escapeHtml(text) {
+            return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function renderAdminSections() {
+            var container = document.getElementById('adminSectionsContainer');
+            var sections = allFormations[adminCurrentFormation].sections;
+            if (!sections || sections.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#aaa; padding: 25px 0; font-size:14px;">Aucune section. Cliquez sur "Ajouter une section" pour commencer.</p>';
+                return;
+            }
+            container.innerHTML = sections.map(function(section, sIdx) {
+                var tasksHtml = section.tasks.map(function(task, tIdx) {
+                    return '<div class="admin-task-item">' +
+                        '<span class="admin-task-text">' + escapeHtml(task) + '</span>' +
+                        '<button class="admin-icon-btn admin-btn-edit" onclick="adminEditTask(' + sIdx + ',' + tIdx + ')" title="Modifier">✏</button>' +
+                        '<button class="admin-icon-btn admin-btn-move" onclick="adminMoveTask(' + sIdx + ',' + tIdx + ',-1)" title="Monter">▲</button>' +
+                        '<button class="admin-icon-btn admin-btn-move" onclick="adminMoveTask(' + sIdx + ',' + tIdx + ',1)" title="Descendre">▼</button>' +
+                        '<button class="admin-icon-btn admin-btn-delete" onclick="adminDeleteTask(' + sIdx + ',' + tIdx + ')" title="Supprimer">✕</button>' +
+                    '</div>';
+                }).join('');
+                return '<div class="admin-section-item">' +
+                    '<div class="admin-section-header">' +
+                        '<span class="admin-section-title-text">' + section.id + '. ' + escapeHtml(section.title) + '</span>' +
+                        '<button class="admin-icon-btn admin-btn-edit" onclick="adminEditSection(' + sIdx + ')" title="Modifier titre">✏</button>' +
+                        '<button class="admin-icon-btn admin-btn-move" onclick="adminMoveSection(' + sIdx + ',-1)" title="Monter">▲</button>' +
+                        '<button class="admin-icon-btn admin-btn-move" onclick="adminMoveSection(' + sIdx + ',1)" title="Descendre">▼</button>' +
+                        '<button class="admin-icon-btn admin-btn-delete" onclick="adminDeleteSection(' + sIdx + ')" title="Supprimer">✕</button>' +
+                    '</div>' +
+                    '<div class="admin-tasks-list">' +
+                        (tasksHtml || '<p style="color:#bbb; font-size:13px; margin: 5px 0;">Aucune tache dans cette section</p>') +
+                        '<button class="admin-icon-btn admin-btn-green" onclick="adminAddTask(' + sIdx + ')" style="margin-top:8px;">+ Ajouter une tache</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        function adminAddSection() {
+            var title = prompt('Titre de la nouvelle section :');
+            if (title === null) return;
+            title = title.trim();
+            if (!title) { showAlert('Le titre ne peut pas etre vide', 'Erreur', 'warning'); return; }
+            var sections = allFormations[adminCurrentFormation].sections;
+            var newId = sections.length > 0 ? Math.max.apply(null, sections.map(function(s){ return s.id; })) + 1 : 1;
+            sections.push({ id: newId, title: title, tasks: [] });
+            renderAdminSections();
+        }
+
+        function adminEditSection(sIdx) {
+            var section = allFormations[adminCurrentFormation].sections[sIdx];
+            var newTitle = prompt('Nouveau titre de la section :', section.title);
+            if (newTitle === null) return;
+            newTitle = newTitle.trim();
+            if (!newTitle) { showAlert('Le titre ne peut pas etre vide', 'Erreur', 'warning'); return; }
+            allFormations[adminCurrentFormation].sections[sIdx].title = newTitle;
+            renderAdminSections();
+        }
+
+        function adminDeleteSection(sIdx) {
+            var section = allFormations[adminCurrentFormation].sections[sIdx];
+            if (!confirm('Supprimer la section "' + section.title + '" et toutes ses taches ?\n\nATTENTION : Cette action est irreversible.')) return;
+            allFormations[adminCurrentFormation].sections.splice(sIdx, 1);
+            allFormations[adminCurrentFormation].sections.forEach(function(s, i) { s.id = i + 1; });
+            renderAdminSections();
+        }
+
+        function adminMoveSection(sIdx, direction) {
+            var sections = allFormations[adminCurrentFormation].sections;
+            var newIdx = sIdx + direction;
+            if (newIdx < 0 || newIdx >= sections.length) return;
+            var temp = sections[sIdx];
+            sections[sIdx] = sections[newIdx];
+            sections[newIdx] = temp;
+            sections.forEach(function(s, i) { s.id = i + 1; });
+            renderAdminSections();
+        }
+
+        function adminAddTask(sIdx) {
+            var task = prompt('Texte de la nouvelle tache :');
+            if (task === null) return;
+            task = task.trim();
+            if (!task) { showAlert('La tache ne peut pas etre vide', 'Erreur', 'warning'); return; }
+            allFormations[adminCurrentFormation].sections[sIdx].tasks.push(task);
+            renderAdminSections();
+        }
+
+        function adminEditTask(sIdx, tIdx) {
+            var task = allFormations[adminCurrentFormation].sections[sIdx].tasks[tIdx];
+            var newTask = prompt('Modifier la tache :', task);
+            if (newTask === null) return;
+            newTask = newTask.trim();
+            if (!newTask) { showAlert('La tache ne peut pas etre vide', 'Erreur', 'warning'); return; }
+            allFormations[adminCurrentFormation].sections[sIdx].tasks[tIdx] = newTask;
+            renderAdminSections();
+        }
+
+        function adminDeleteTask(sIdx, tIdx) {
+            var task = allFormations[adminCurrentFormation].sections[sIdx].tasks[tIdx];
+            if (!confirm('Supprimer la tache :\n"' + task + '" ?')) return;
+            allFormations[adminCurrentFormation].sections[sIdx].tasks.splice(tIdx, 1);
+            renderAdminSections();
+        }
+
+        function adminMoveTask(sIdx, tIdx, direction) {
+            var tasks = allFormations[adminCurrentFormation].sections[sIdx].tasks;
+            var newIdx = tIdx + direction;
+            if (newIdx < 0 || newIdx >= tasks.length) return;
+            var temp = tasks[tIdx];
+            tasks[tIdx] = tasks[newIdx];
+            tasks[newIdx] = temp;
+            renderAdminSections();
+        }
+
+        async function adminSaveFormation() {
+            if (!cloudConfig) {
+                showAlert('Vous devez etre connecte au cloud pour publier les modifications.\nLes changements sont appliques localement mais ne seront pas visibles par les autres utilisateurs.', 'Cloud non connecte', 'warning');
+                if (adminCurrentFormation === currentFormation) {
+                    formationData = allFormations[currentFormation];
+                    renderSections();
+                    updateProgress();
+                }
+                return;
+            }
+            if (adminCurrentFormation === currentFormation) {
+                formationData = allFormations[currentFormation];
+            }
+            await saveToCloud();
+            showAlert('Modifications publiees avec succes !\nTous les utilisateurs verront les changements apres avoir recharge la page.', 'Publie', 'success');
+            closeAdminModal();
+            if (adminCurrentFormation === currentFormation) {
+                renderSections();
+                updateProgress();
+            }
+        }
+
+        function adminChangePassword() {
+            var newPass = prompt('Nouveau mot de passe administrateur :');
+            if (newPass === null) return;
+            newPass = newPass.trim();
+            if (!newPass) { showAlert('Le mot de passe ne peut pas etre vide', 'Erreur', 'warning'); return; }
+            var confirm2 = prompt('Confirmer le nouveau mot de passe :');
+            if (newPass !== confirm2) { showAlert('Les mots de passe ne correspondent pas', 'Erreur', 'error'); return; }
+            localStorage.setItem('gemef-admin-password', newPass);
+            showAlert('Mot de passe administrateur modifie avec succes !', 'Succes', 'success');
         }
     </script>
 </body>
