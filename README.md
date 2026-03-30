@@ -21,24 +21,25 @@ Chaque formation a ses propres couleurs : orange (Extrusion), vert (Conditionnem
 
 ---
 
-## Configuration Cloud Sync (multi-utilisateur)
+## Connexion
 
-Le systeme Cloud Sync permet a plusieurs utilisateurs de partager les profils de formation. Chaque utilisateur a son propre compte et ne peut modifier que ses profils.
+### Identifiants utilisateurs
 
-### Informations de connexion
-
-| Parametre | Valeur |
-|-----------|--------|
-| **Cle API** | `$2a$10$u3FnP3uRAlAK.tD4eZwz1Oa/90/wyX304cYOBF1V55k4wWikPBDpG` |
-| **Bin ID** | `69723ebdae596e708fedbeb5` |
+| Identifiant | Utilisateur | Mot de passe |
+|-------------|-------------|--------------|
+| **CDP1** | CDP1 | `GemefCDP1` |
+| **CDP2** | Sebastien | `GemefCDP2` |
+| **CDP3** | CDP3 | `GemefCDP3` |
+| **ADMIN** | Admin | `GemefADMIN` |
 
 ### Procedure de connexion
 
 1. Ouvrir le formulaire
-2. Cliquer sur **"Cloud Sync"** (barre de profils)
-3. Entrer **votre nom d'utilisateur** (identifiant unique, ex: `jean-dupont`)
-4. Entrer la cle API et le Bin ID
-5. Cliquer sur **Connecter**
+2. Entrer l'identifiant (ex: CDP1)
+3. Entrer le mot de passe
+4. Cliquer sur **Se connecter**
+
+La connexion au cloud est automatique apres identification.
 
 ### Droits d'acces par utilisateur
 
@@ -54,6 +55,17 @@ Les profils des autres utilisateurs sont affiches avec un bandeau **"Mode lectur
 
 ---
 
+## Configuration Cloud Sync (technique)
+
+| Parametre | Valeur |
+|-----------|--------|
+| **Cle API** | `$2a$10$u3FnP3uRAlAK.tD4eZwz1Oa/90/wyX304cYOBF1V55k4wWikPBDpG` |
+| **Bin ID** | `69723ebdae596e708fedbeb5` |
+
+Ces codes sont integres automatiquement lors de la connexion utilisateur.
+
+---
+
 ## Mail type a envoyer aux utilisateurs
 
 ```
@@ -65,19 +77,15 @@ Veuillez trouver ci-dessous le lien d'acces au formulaire de suivi des competenc
 
 https://formation-extrusion.netlify.app
 
-Procedure de connexion au systeme de synchronisation :
+Procedure de connexion :
 
 1. Ouvrir le lien ci-dessus
-2. Cliquer sur le bouton "Cloud Sync" situe dans la barre superieure
-3. Renseigner les informations suivantes :
-   - Nom d'utilisateur : choisissez un identifiant unique (ex: prenom-nom)
-   - Cle API : $2a$10$u3FnP3uRAlAK.tD4eZwz1Oa/90/wyX304cYOBF1V55k4wWikPBDpG
-   - Bin ID : 69723ebdae596e708fedbeb5
-4. Cliquer sur "Connecter"
+2. Entrer votre identifiant (CDP1, CDP2, CDP3 ou ADMIN)
+3. Entrer votre mot de passe
+4. Cliquer sur "Se connecter"
 
-Important : retenez bien votre nom d'utilisateur, il vous sera necessaire
-pour modifier vos profils. Vous pourrez consulter les profils des autres
-utilisateurs en lecture seule.
+Une fois connecte, vous aurez acces a l'ensemble des profils de formation.
+Vous pourrez consulter les profils des autres utilisateurs en lecture seule.
 
 Je reste a votre disposition pour toute question.
 
