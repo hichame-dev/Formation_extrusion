@@ -8,23 +8,35 @@ Formulaire de suivi des competences pour la formation au poste d'extrusion.
 
 ---
 
-## Configuration Cloud Sync
+## Connexion
 
-Pour synchroniser les profils entre tous les utilisateurs :
+### Identifiants utilisateurs
 
-### Informations de connexion
+| Identifiant | Utilisateur | Mot de passe |
+|-------------|-------------|--------------|
+| **CDP1** | CDP1 | `GemefCDP1` |
+| **CDP2** | Sebastien | `GemefCDP2` |
+| **CDP3** | CDP3 | `GemefCDP3` |
+
+### Procedure de connexion
+
+1. Ouvrir le formulaire
+2. Entrer l'identifiant (ex: CDP1)
+3. Entrer le mot de passe
+4. Cliquer sur **Se connecter**
+
+La connexion au cloud est automatique apres identification.
+
+---
+
+## Configuration Cloud Sync (technique)
 
 | Parametre | Valeur |
 |-----------|--------|
 | **Cle API** | `$2a$10$u3FnP3uRAlAK.tD4eZwz1Oa/90/wyX304cYOBF1V55k4wWikPBDpG` |
 | **Bin ID** | `69723ebdae596e708fedbeb5` |
 
-### Procedure de connexion
-
-1. Ouvrir le formulaire
-2. Cliquer sur **"Cloud Sync"** (barre orange)
-3. Entrer la cle API et le Bin ID
-4. Cliquer sur **Connecter**
+Ces codes sont integres automatiquement lors de la connexion utilisateur.
 
 ---
 
@@ -35,18 +47,16 @@ Objet : Acces au formulaire de suivi de formation - Poste Extrusion
 
 Bonjour,
 
-Veuillez trouver ci-dessous le lien d'acces au formulaire de suivi des competences pour le poste Extrusion :
+Veuillez trouver ci-dessous le lien d'acces au formulaire de suivi des competences :
 
 https://formation-extrusion.netlify.app
 
-Procedure de connexion au systeme de synchronisation :
+Procedure de connexion :
 
 1. Ouvrir le lien ci-dessus
-2. Cliquer sur le bouton "Cloud Sync" situe dans la barre superieure
-3. Renseigner les informations suivantes :
-   - Cle API : $2a$10$u3FnP3uRAlAK.tD4eZwz1Oa/90/wyX304cYOBF1V55k4wWikPBDpG
-   - Bin ID : 69723ebdae596e708fedbeb5
-4. Cliquer sur "Connecter"
+2. Entrer votre identifiant (CDP1, CDP2 ou CDP3)
+3. Entrer votre mot de passe
+4. Cliquer sur "Se connecter"
 
 Une fois connecte, vous aurez acces a l'ensemble des profils de formation partages.
 
