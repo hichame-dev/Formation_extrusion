@@ -17,6 +17,7 @@ Formulaire de suivi des competences pour la formation au poste d'extrusion.
 | **CDP1** | CDP1 | `GemefCDP1` |
 | **CDP2** | Sebastien | `GemefCDP2` |
 | **CDP3** | CDP3 | `GemefCDP3` |
+| **ADMIN** | Admin | `GemefADMIN` |
 
 ### Procedure de connexion
 
