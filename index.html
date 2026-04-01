@@ -694,8 +694,8 @@
             currentUser = { id: identifiant, name: user.name };
             localStorage.setItem('gemef-current-user', JSON.stringify(currentUser));
 
-            // Auto-connexion au cloud
-            cloudConfig = { apiKey: cloudCredentials.apiKey, binId: cloudCredentials.binId };
+            // Auto-connexion au cloud avec username
+            cloudConfig = { apiKey: cloudCredentials.apiKey, binId: cloudCredentials.binId, username: identifiant };
             localStorage.setItem('gemef-cloud-config', JSON.stringify(cloudConfig));
 
             hideLoginModal();
@@ -715,9 +715,11 @@
         function logout() {
             localStorage.removeItem('gemef-current-user');
             localStorage.removeItem('gemef-cloud-config');
+            localStorage.removeItem('gemef-last-profile');
             currentUser = null;
             cloudConfig = null;
-            location.reload();
+            currentProfile = null;
+            window.location.href = window.location.href.split('#')[0];
         }
 
         var currentFormation = localStorage.getItem('gemef-current-formation') || 'extrusion';
@@ -1078,8 +1080,9 @@
             // Migration : assigner owner et formation aux anciens profils (après chargement cloud)
             var migrateProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var needsMigration = false;
+            var migrateUsername = (cloudConfig && cloudConfig.username) ? cloudConfig.username : (currentUser ? currentUser.id : null);
             migrateProfiles.forEach(function(p) {
-                if (!p.owner) { p.owner = 'hichame13'; needsMigration = true; }
+                if (!p.owner && migrateUsername) { p.owner = migrateUsername; needsMigration = true; }
                 if (!p.formation) { p.formation = 'extrusion'; needsMigration = true; }
             });
             if (needsMigration) {
