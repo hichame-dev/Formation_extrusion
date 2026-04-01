@@ -363,8 +363,8 @@
                 <option value="meunerie">Meunerie</option>
             </select>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
-            <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn">&#9729; Cloud Sync</button>
-            <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px;"></span>
+            <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn" style="display:none;">&#9729; Cloud Sync</button>
+            <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px; cursor:pointer;" onclick="showCloudModal()"></span>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 6px;"></span>
             <button class="profile-btn" onclick="showAdminModal()" style="border-color: #ff9999; color: #ffcccc;">&#9881; Admin</button>
         </div>
