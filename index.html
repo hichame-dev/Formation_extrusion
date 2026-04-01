@@ -999,7 +999,8 @@
             }
 
             closeProfileModal();
-            location.reload();
+            loadProfiles();
+            reloadProfile();
         }
 
         function switchFormation() {
@@ -1029,7 +1030,86 @@
 
             currentProfile = profileId;
             localStorage.setItem('gemef-last-profile', profileId);
-            location.reload();
+            reloadProfile();
+        }
+
+        function reloadProfile() {
+            // Reset data
+            taskStatus = {};
+            taskHistory = {};
+            customLogo = null;
+            isReadOnly = false;
+
+            // Remove read-only banner if present
+            var oldBanner = document.getElementById('readOnlyBanner');
+            if (oldBanner) oldBanner.remove();
+
+            // Restore default logo
+            var logoImg = document.getElementById('logoImage');
+            if (logoImg) logoImg.src = 'asset/logo_gemef_galble_03.png';
+
+            // Re-enable all inputs/buttons (undo read-only mode)
+            document.querySelectorAll('.status-btn').forEach(function(btn) {
+                btn.style.pointerEvents = '';
+                btn.style.opacity = '';
+            });
+            document.querySelectorAll('.acquis-select').forEach(function(sel) {
+                sel.disabled = false;
+                sel.style.opacity = '';
+            });
+            document.querySelectorAll('.info-value input, .comments-section textarea, .signature-field input').forEach(function(input) {
+                input.readOnly = false;
+                input.style.opacity = '';
+                input.style.cursor = '';
+            });
+            document.querySelectorAll('.signature-canvas').forEach(function(canvas) {
+                canvas.style.pointerEvents = '';
+                canvas.style.opacity = '';
+            });
+            document.querySelectorAll('.clear-signature').forEach(function(btn) {
+                btn.style.display = '';
+            });
+            document.querySelector('.header-actions .btn-secondary').style.display = '';
+
+            // Reset form fields
+            ['tuteurNom','tuteurPrenom','eleveNom','elevePrenom','dateDebut','dateFin','duree','comments','signatureTuteurDate','signatureEleveDate','signatureChefDate'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Load profile data
+            loadData();
+            checkReadOnly();
+
+            // Re-render sections and progress
+            if (formationData.sections.length === 0) {
+                document.getElementById('sectionsContainer').innerHTML = '<div style="text-align: center; padding: 50px; color: #888; font-size: 18px;">Cette formation est en cours de construction.</div>';
+            } else {
+                renderSections();
+            }
+            updateProgress();
+
+            // Reload signatures on canvases
+            var canvasIds = ['signatureTuteur', 'signatureEleve', 'signatureChef'];
+            canvasIds.forEach(function(id) {
+                var sc = signatureCanvases[id];
+                if (!sc) return;
+                sc.ctx.clearRect(0, 0, sc.canvas.width, sc.canvas.height);
+                if (!currentProfile) return;
+                var saved = localStorage.getItem(getProfileKey(currentProfile));
+                if (saved) {
+                    var data = JSON.parse(saved);
+                    if (data.signatures && data.signatures[id]) {
+                        var img = new Image();
+                        img.onload = function() {
+                            sc.ctx.drawImage(img, 0, 0);
+                        };
+                        img.src = data.signatures[id];
+                    }
+                }
+            });
+
+            applyReadOnlyMode();
         }
 
         function deleteProfile() {
@@ -1070,7 +1150,8 @@
             currentProfile = null;
             localStorage.removeItem('gemef-last-profile');
             closeDeleteModal();
-            location.reload();
+            loadProfiles();
+            reloadProfile();
         }
 
         function updateProfileProgress() {
@@ -1203,7 +1284,8 @@
 
                 closeCloudModal();
                 showAlert('Connecte au cloud en tant que "' + username + '" ! Bin ID: ' + binId, 'Connexion reussie', 'success');
-                location.reload();
+                loadProfiles();
+                reloadProfile();
             } catch (err) {
                 console.error('Erreur connexion cloud:', err);
                 showAlert(err.message, 'Erreur de connexion', 'error');
@@ -1933,7 +2015,7 @@
             });
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
             closeResetModal();
-            location.reload();
+            reloadProfile();
         }
 
         function exportPDF() {
