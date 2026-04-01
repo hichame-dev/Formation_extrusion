@@ -21,11 +21,20 @@ Chaque formation a ses propres couleurs : orange (Extrusion), vert (Conditionnem
 
 ---
 
-## Cloud Sync (multi-utilisateur)
+## Connexion
 
-Le systeme Cloud Sync permet a plusieurs utilisateurs de partager les profils de formation. Chaque utilisateur a son propre compte et ne peut modifier que ses profils.
+### Procedure de connexion
 
-Les profils des autres utilisateurs sont affiches avec un bandeau **"Mode lecture seule"**.
+1. Ouvrir le formulaire
+2. Entrer l'identifiant (ex: CDP1)
+3. Entrer le mot de passe
+4. Cliquer sur **Se connecter**
+
+La connexion au cloud est automatique apres identification.
+
+> **Identifiants et mots de passe :** voir `CREDENTIALS.md` (fichier local, non publie sur GitHub)
+
+### Droits d'acces par utilisateur
 
 | Action | Mes profils | Profils des autres |
 |--------|-------------|-------------------|
@@ -35,7 +44,7 @@ Les profils des autres utilisateurs sont affiches avec un bandeau **"Mode lectur
 | Supprimer | Oui | Non |
 | Reinitialiser | Oui | Non |
 
-> **Identifiants et procedure de connexion :** voir `CREDENTIALS.md` (fichier local, non publie sur GitHub)
+Les profils des autres utilisateurs sont affiches avec un bandeau **"Mode lecture seule"** et le nom du proprietaire.
 
 ---
 
@@ -111,22 +120,22 @@ Pour changer le mot de passe : ouvrir le panel Admin -> se connecter -> cliquer 
 
 ---
 
-### Migrer la base de donnees (JSONBin → serveur interne)
+### Migrer la base de donnees (JSONBin -> serveur interne)
 
 **Situation actuelle :** donnees stockees sur JSONBin.io (cloud externe, gratuit)
 
-#### Option A — Serveur PHP (recommande, le plus simple)
+#### Option A -- Serveur PHP (recommande, le plus simple)
 
 Demander a l'IT : *"Peut-on heberger 3 fichiers PHP sur le serveur intranet ?"*
 
 Creer ces 3 fichiers sur le serveur :
 
-**`data.json`** — fichier vide au depart :
+**`data.json`** -- fichier vide au depart :
 ```json
 {}
 ```
 
-**`load.php`** — lecture des donnees :
+**`load.php`** -- lecture des donnees :
 ```php
 <?php
 header('Content-Type: application/json');
@@ -135,7 +144,7 @@ $data = file_get_contents('data.json');
 echo $data ?: '{}';
 ```
 
-**`save.php`** — ecriture des donnees :
+**`save.php`** -- ecriture des donnees :
 ```php
 <?php
 header('Access-Control-Allow-Origin: *');
@@ -151,11 +160,11 @@ if ($input) {
 ```
 
 Ensuite dans `index.html`, remplacer les URLs JSONBin par les URLs du serveur :
-- `https://api.jsonbin.io/v3/b/[BIN_ID]/latest` → `http://[IP-SERVEUR]/formation/load.php`
-- `https://api.jsonbin.io/v3/b/[BIN_ID]` (PUT) → `http://[IP-SERVEUR]/formation/save.php`
+- `https://api.jsonbin.io/v3/b/[BIN_ID]/latest` -> `http://[IP-SERVEUR]/formation/load.php`
+- `https://api.jsonbin.io/v3/b/[BIN_ID]` (PUT) -> `http://[IP-SERVEUR]/formation/save.php`
 - Supprimer les headers `X-Master-Key` dans les requetes fetch
 
-#### Option B — Base de donnees MySQL
+#### Option B -- Base de donnees MySQL
 
 Demander a l'IT : *"Peut-on avoir une base MySQL et un acces PHP ?"*
 

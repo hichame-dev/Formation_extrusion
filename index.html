@@ -365,6 +365,7 @@
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
             <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn" style="display:none;">&#9729; Cloud Sync</button>
             <span id="cloudStatus" style="color: rgba(255,255,255,0.8); font-size: 12px; cursor:pointer;" onclick="showCloudModal()"></span>
+            <button class="profile-btn danger" onclick="logout()" title="Se déconnecter">Déconnexion</button>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 6px;"></span>
             <button class="profile-btn" onclick="showAdminModal()" style="border-color: #ff9999; color: #ffcccc;">&#9881; Admin</button>
         </div>
@@ -622,7 +623,103 @@
         </div>
     </div>
 
+    <!-- Modal Login -->
+    <div class="modal-overlay" id="loginModal" style="background: rgba(0,0,0,0.8);">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--gemef-orange) 0%, var(--gemef-orange-dark) 100%);">
+                <h3>Connexion</h3>
+                <p>GEMEF Industries - Formation</p>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label for="loginIdentifiant">Identifiant</label>
+                    <input type="text" id="loginIdentifiant" placeholder="Ex: CDP1" autocomplete="username" style="text-transform: uppercase;">
+                </div>
+                <div class="modal-field">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" placeholder="Mot de passe" autocomplete="current-password">
+                </div>
+                <p id="loginError" style="color: #E74C3C; font-size: 13px; margin-top: 10px; display: none;"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="doLogin()" style="width: 100%;">Se connecter</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ===== SYSTEME DE LOGIN =====
+        var userCredentials = {
+            'CDP1': { password: 'GemefCDP1', name: 'CDP1' },
+            'CDP2': { password: 'GemefCDP2', name: 'Sébastien' },
+            'CDP3': { password: 'GemefCDP3', name: 'CDP3' },
+            'ADMIN': { password: 'GemefADMIN', name: 'Admin' }
+        };
+
+        var cloudCredentials = {
+            apiKey: '$2a$10$u3FnP3uRAlAK.tD4eZwz1Oa/90/wyX304cYOBF1V55k4wWikPBDpG',
+            binId: '69723ebdae596e708fedbeb5'
+        };
+
+        var currentUser = JSON.parse(localStorage.getItem('gemef-current-user') || 'null');
+
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+            document.getElementById('loginIdentifiant').focus();
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        function doLogin() {
+            var identifiant = document.getElementById('loginIdentifiant').value.trim().toUpperCase();
+            var password = document.getElementById('loginPassword').value;
+            var errorEl = document.getElementById('loginError');
+
+            if (!identifiant || !password) {
+                errorEl.textContent = 'Veuillez remplir tous les champs';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            var user = userCredentials[identifiant];
+            if (!user || user.password !== password) {
+                errorEl.textContent = 'Identifiant ou mot de passe incorrect';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            // Connexion réussie
+            currentUser = { id: identifiant, name: user.name };
+            localStorage.setItem('gemef-current-user', JSON.stringify(currentUser));
+
+            // Auto-connexion au cloud
+            cloudConfig = { apiKey: cloudCredentials.apiKey, binId: cloudCredentials.binId };
+            localStorage.setItem('gemef-cloud-config', JSON.stringify(cloudConfig));
+
+            hideLoginModal();
+            initApp();
+        }
+
+        // Permettre connexion avec Entrée
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') doLogin();
+            });
+            document.getElementById('loginIdentifiant').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+            });
+        });
+
+        function logout() {
+            localStorage.removeItem('gemef-current-user');
+            localStorage.removeItem('gemef-cloud-config');
+            currentUser = null;
+            cloudConfig = null;
+            location.reload();
+        }
+
         var currentFormation = localStorage.getItem('gemef-current-formation') || 'extrusion';
 
         var formationThemes = {
@@ -944,15 +1041,30 @@
             document.querySelector('.header-actions .btn-secondary').style.display = 'none';
         }
 
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier si l'utilisateur est connecté
+            if (!currentUser) {
+                showLoginModal();
+            } else {
+                initApp();
+            }
+        });
+
+        async function initApp() {
             // Initialiser le sélecteur de formation
             document.getElementById('formationSelect').value = currentFormation;
             document.getElementById('headerTitle').textContent = formationData.title;
 
+            // Afficher l'utilisateur connecté
+            if (currentUser) {
+                document.getElementById('cloudStatus').textContent = '● ' + currentUser.id;
+                document.getElementById('cloudStatus').style.color = '#90EE90';
+            }
+
             // Charger depuis le cloud si configure
             if (cloudConfig && cloudConfig.apiKey && cloudConfig.binId) {
                 await loadFromCloud();
-                document.getElementById('cloudStatus').textContent = '● ' + (cloudConfig.username || 'Cloud');
+                document.getElementById('cloudStatus').textContent = '● ' + (currentUser ? currentUser.id : 'Cloud');
                 document.getElementById('cloudStatus').style.color = '#90EE90';
             } else {
                 // Sans connexion cloud, supprimer les profils locaux (protection des donnees)
@@ -989,7 +1101,7 @@
             initSignatureCanvases();
             applyReadOnlyMode();
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR');
-        });
+        }
 
         // ===== GESTION DES PROFILS =====
         function getProfileKey(profileId) {
