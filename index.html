@@ -1037,11 +1037,12 @@
             // Afficher le bandeau lecture seule
             var banner = document.createElement('div');
             banner.id = 'readOnlyBanner';
-            banner.style.cssText = 'background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%); color: white; text-align: center; padding: 10px 20px; font-weight: 600; font-size: 14px; border-radius: 8px; margin-bottom: 15px;';
+            banner.style.cssText = 'background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%); color: white; text-align: center; padding: 10px 20px; font-weight: 600; font-size: 14px; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;';
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var profile = profiles.find(function(p) { return p.id === currentProfile; });
             var ownerName = profile ? profile.owner : 'un autre utilisateur';
-            banner.innerHTML = '&#128274; Mode lecture seule - Ce profil appartient a <strong>' + ownerName + '</strong>';
+            banner.innerHTML = '<span>&#128274; Mode lecture seule - Ce profil appartient a <strong>' + ownerName + '</strong></span>' +
+                '<button onclick="claimProfile()" style="background: white; color: #E67E22; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Revendiquer ce profil</button>';
             var container = document.querySelector('.container');
             container.insertBefore(banner, container.querySelector('.progress-overview'));
 
@@ -1267,6 +1268,23 @@
 
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        async function claimProfile() {
+            if (!currentProfile) return;
+            if (!cloudConfig || !cloudConfig.username) {
+                showAlert('Vous devez etre connecte pour revendiquer un profil.', 'Action impossible', 'error');
+                return;
+            }
+            var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+            var profile = profiles.find(function(p) { return p.id === currentProfile; });
+            if (!profile) return;
+            var oldOwner = profile.owner || '(aucun)';
+            if (!confirm('Revendiquer ce profil ?\n\nProprietaire actuel : ' + oldOwner + '\nNouveau proprietaire : ' + cloudConfig.username + '\n\nConfirmer ?')) return;
+            profile.owner = cloudConfig.username;
+            localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
+            if (cloudConfig) await saveToCloud();
+            location.reload();
         }
 
         async function confirmDeleteProfile() {
@@ -1506,9 +1524,14 @@
                 var normOwner = function(p) { return p && p.owner ? String(p.owner).trim().toUpperCase() : ''; };
                 var localProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
 
-                // Garder les profils des AUTRES utilisateurs depuis le cloud
+                // Ids des profils locaux (pour eviter les doublons lors d'une reassignation d'owner)
+                var localIds = {};
+                localProfiles.forEach(function(p) { localIds[p.id] = true; });
+
+                // Garder les profils des AUTRES utilisateurs depuis le cloud, en excluant ceux qu'on a reclame en local
                 var otherProfiles = (currentCloudData.profiles || []).filter(function(p) {
                     var o = normOwner(p);
+                    if (localIds[p.id]) return false; // version locale fait foi
                     return o && o !== myUsernameUpper;
                 });
                 var otherProfilesData = {};
