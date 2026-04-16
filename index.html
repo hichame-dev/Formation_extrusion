@@ -982,6 +982,11 @@
 
         // JSONBin.io Cloud Config
         var cloudConfig = JSON.parse(localStorage.getItem('gemef-cloud-config') || 'null');
+        // Backfill : si l'utilisateur est connecte mais cloudConfig.username manquant, le remplir
+        if (currentUser && cloudConfig && !cloudConfig.username) {
+            cloudConfig.username = currentUser.id;
+            localStorage.setItem('gemef-cloud-config', JSON.stringify(cloudConfig));
+        }
         var isReadOnly = false;
 
         function checkReadOnly() {
@@ -991,7 +996,9 @@
             }
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var profile = profiles.find(function(p) { return p.id === currentProfile; });
-            if (profile && profile.owner && profile.owner !== cloudConfig.username) {
+            var myName = String(cloudConfig.username).trim().toUpperCase();
+            var ownerName = profile && profile.owner ? String(profile.owner).trim().toUpperCase() : '';
+            if (profile && ownerName && ownerName !== myName) {
                 isReadOnly = true;
             } else {
                 isReadOnly = false;
@@ -1120,10 +1127,14 @@
             });
             var select = document.getElementById('profileSelect');
             select.innerHTML = '<option value="">-- Selectionner un profil --</option>';
+            var myName = cloudConfig && cloudConfig.username ? String(cloudConfig.username).trim().toUpperCase() : '';
             profiles.forEach(function(profile) {
                 var option = document.createElement('option');
                 option.value = profile.id;
-                option.textContent = profile.name;
+                var ownerTag = profile.owner ? ' [' + profile.owner + ']' : '';
+                var ownerUp = profile.owner ? String(profile.owner).trim().toUpperCase() : '';
+                var lockIcon = (ownerUp && ownerUp !== myName) ? ' 🔒' : '';
+                option.textContent = profile.name + ownerTag + lockIcon;
                 select.appendChild(option);
             });
             // Selectionner le dernier profil utilise
@@ -1491,11 +1502,14 @@
                 } catch (e) { /* ignore, on ecrasera */ }
 
                 var myUsername = cloudConfig.username;
+                var myUsernameUpper = String(myUsername || '').trim().toUpperCase();
+                var normOwner = function(p) { return p && p.owner ? String(p.owner).trim().toUpperCase() : ''; };
                 var localProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
 
                 // Garder les profils des AUTRES utilisateurs depuis le cloud
                 var otherProfiles = (currentCloudData.profiles || []).filter(function(p) {
-                    return p.owner && p.owner !== myUsername;
+                    var o = normOwner(p);
+                    return o && o !== myUsernameUpper;
                 });
                 var otherProfilesData = {};
                 otherProfiles.forEach(function(p) {
@@ -1507,7 +1521,8 @@
 
                 // Mes profils locaux
                 var myProfiles = localProfiles.filter(function(p) {
-                    return !p.owner || p.owner === myUsername;
+                    var o = normOwner(p);
+                    return !o || o === myUsernameUpper;
                 });
                 var myProfilesData = {};
                 myProfiles.forEach(function(p) {
