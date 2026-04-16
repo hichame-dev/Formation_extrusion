@@ -1063,9 +1063,11 @@
                 document.getElementById('cloudStatus').style.color = '#90EE90';
             }
 
-            // Charger depuis le cloud si configure
+            // Charger depuis le cloud si configure (sauter si on vient d'un switch de profil)
+            var skipCloudLoad = sessionStorage.getItem('skip-cloud-load') === '1';
+            sessionStorage.removeItem('skip-cloud-load');
             if (cloudConfig && cloudConfig.apiKey && cloudConfig.binId) {
-                await loadFromCloud();
+                if (!skipCloudLoad) await loadFromCloud();
                 document.getElementById('cloudStatus').textContent = '● ' + (currentUser ? currentUser.id : 'Cloud');
                 document.getElementById('cloudStatus').style.color = '#90EE90';
             } else {
@@ -1188,6 +1190,7 @@
             }
 
             closeProfileModal();
+            sessionStorage.setItem('skip-cloud-load', '1');
             location.reload();
         }
 
@@ -1223,8 +1226,15 @@
                 return;
             }
 
+            // Flush tout save en attente avant de changer de profil
+            if (saveToCloudTimer) {
+                clearTimeout(saveToCloudTimer);
+                saveToCloudTimer = null;
+                if (cloudConfig) saveToCloud();
+            }
             currentProfile = profileId;
             localStorage.setItem('gemef-last-profile', profileId);
+            sessionStorage.setItem('skip-cloud-load', '1');
             location.reload();
         }
 
@@ -1457,6 +1467,12 @@
             } catch (err) {
                 console.error('Erreur chargement cloud:', err);
             }
+        }
+
+        var saveToCloudTimer = null;
+        function saveToCloudDebounced() {
+            if (saveToCloudTimer) clearTimeout(saveToCloudTimer);
+            saveToCloudTimer = setTimeout(function() { saveToCloud(); }, 1500);
         }
 
         async function saveToCloud() {
@@ -2032,9 +2048,9 @@
             if (currentProfile) {
                 localStorage.setItem(getProfileKey(currentProfile), JSON.stringify(data));
                 updateProfileProgress();
-                // Sauvegarder aussi dans le cloud si connecte
+                // Sauvegarder aussi dans le cloud (debounce pour eviter les spams reseau)
                 if (cloudConfig) {
-                    saveToCloud();
+                    saveToCloudDebounced();
                 }
             }
         }
