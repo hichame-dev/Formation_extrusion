@@ -1128,9 +1128,9 @@
 
         function loadProfiles() {
             var allProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
-            // Filtrer par formation courante
+            // Filtrer strictement par formation courante (un profil n'apparait que dans sa formation)
             var profiles = allProfiles.filter(function(p) {
-                return !p.formation || p.formation === currentFormation;
+                return p.formation === currentFormation;
             });
             var select = document.getElementById('profileSelect');
             select.innerHTML = '<option value="">-- Selectionner un profil --</option>';
