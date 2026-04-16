@@ -1041,8 +1041,14 @@
             var profiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
             var profile = profiles.find(function(p) { return p.id === currentProfile; });
             var ownerName = profile ? profile.owner : 'un autre utilisateur';
-            banner.innerHTML = '<span>&#128274; Mode lecture seule - Ce profil appartient a <strong>' + ownerName + '</strong></span>' +
-                '<button onclick="claimProfile()" style="background: white; color: #E67E22; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Revendiquer ce profil</button>';
+            // Le bouton 'Revendiquer' n'apparait que si l'owner n'est pas un user valide (ancien pseudo)
+            var validUsers = ['CDP1', 'CDP2', 'CDP3', 'ADMIN'];
+            var ownerUp = profile && profile.owner ? String(profile.owner).trim().toUpperCase() : '';
+            var isObsoleteOwner = ownerUp && validUsers.indexOf(ownerUp) === -1;
+            var claimBtn = isObsoleteOwner
+                ? '<button onclick="claimProfile()" style="background: white; color: #E67E22; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Revendiquer ce profil</button>'
+                : '';
+            banner.innerHTML = '<span>&#128274; Mode lecture seule - Ce profil appartient a <strong>' + ownerName + '</strong></span>' + claimBtn;
             var container = document.querySelector('.container');
             container.insertBefore(banner, container.querySelector('.progress-overview'));
 
