@@ -1530,38 +1530,41 @@
                 var normOwner = function(p) { return p && p.owner ? String(p.owner).trim().toUpperCase() : ''; };
                 var localProfiles = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
 
-                // Ids des profils locaux (pour eviter les doublons lors d'une reassignation d'owner)
-                var localIds = {};
-                localProfiles.forEach(function(p) { localIds[p.id] = true; });
+                // Merge safe par id : pour chaque id rencontre dans cloud+local,
+                // si l'utilisateur courant est proprietaire -> local fait foi ; sinon -> cloud fait foi.
+                var cloudProfiles = currentCloudData.profiles || [];
+                var cloudById = {};
+                cloudProfiles.forEach(function(p) { cloudById[p.id] = p; });
+                var localById = {};
+                localProfiles.forEach(function(p) { localById[p.id] = p; });
 
-                // Garder les profils des AUTRES utilisateurs depuis le cloud, en excluant ceux qu'on a reclame en local
-                var otherProfiles = (currentCloudData.profiles || []).filter(function(p) {
-                    var o = normOwner(p);
-                    if (localIds[p.id]) return false; // version locale fait foi
-                    return o && o !== myUsernameUpper;
-                });
-                var otherProfilesData = {};
-                otherProfiles.forEach(function(p) {
-                    var key = 'gemef-formation-' + p.id;
-                    if (currentCloudData.profilesData && currentCloudData.profilesData[key]) {
-                        otherProfilesData[key] = currentCloudData.profilesData[key];
+                var allIds = {};
+                cloudProfiles.forEach(function(p) { allIds[p.id] = true; });
+                localProfiles.forEach(function(p) { allIds[p.id] = true; });
+
+                var mergedProfiles = [];
+                var mergedProfilesData = {};
+                Object.keys(allIds).forEach(function(id) {
+                    var local = localById[id];
+                    var cloud = cloudById[id];
+                    var key = 'gemef-formation-' + id;
+                    var keepLocal = local && normOwner(local) === myUsernameUpper;
+                    if (keepLocal) {
+                        mergedProfiles.push(local);
+                        var data = localStorage.getItem(key);
+                        if (data) mergedProfilesData[key] = JSON.parse(data);
+                    } else if (cloud) {
+                        mergedProfiles.push(cloud);
+                        if (currentCloudData.profilesData && currentCloudData.profilesData[key]) {
+                            mergedProfilesData[key] = currentCloudData.profilesData[key];
+                        }
+                    } else if (local) {
+                        // Profil local sans version cloud ET non-possede : cas rare, on le garde
+                        mergedProfiles.push(local);
+                        var d2 = localStorage.getItem(key);
+                        if (d2) mergedProfilesData[key] = JSON.parse(d2);
                     }
                 });
-
-                // Mes profils locaux
-                var myProfiles = localProfiles.filter(function(p) {
-                    var o = normOwner(p);
-                    return !o || o === myUsernameUpper;
-                });
-                var myProfilesData = {};
-                myProfiles.forEach(function(p) {
-                    var data = localStorage.getItem('gemef-formation-' + p.id);
-                    if (data) myProfilesData['gemef-formation-' + p.id] = JSON.parse(data);
-                });
-
-                // Fusionner
-                var mergedProfiles = otherProfiles.concat(myProfiles);
-                var mergedProfilesData = Object.assign({}, otherProfilesData, myProfilesData);
 
                 var cloudData = {
                     profiles: mergedProfiles,
