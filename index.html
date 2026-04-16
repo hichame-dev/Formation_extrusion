@@ -342,7 +342,6 @@
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" onclick="resetData()">&#8635; Reinitialiser</button>
-            <button class="btn btn-primary" onclick="exportPDF()">&#128196; Exporter PDF</button>
         </div>
     </header>
     <div class="container">
@@ -2168,13 +2167,6 @@
             localStorage.setItem('gemef-profiles', JSON.stringify(profiles));
             closeResetModal();
             location.reload();
-        }
-
-        function exportPDF() {
-            expandAll();
-            currentFilter = 'all';
-            applyFilter();
-            setTimeout(function() { window.print(); }, 300);
         }
 
         // ===== PANEL ADMIN =====
