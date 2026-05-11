@@ -1659,10 +1659,16 @@
                         });
                     }
                     // Charger les formations personnalisees par l'admin
+                    // Ne remplace la version code que si le cloud contient des sections
+                    // (evite qu'une ancienne version cloud vide n'ecrase le code a jour)
                     if (result.record.formations) {
                         Object.keys(result.record.formations).forEach(function(key) {
-                            if (allFormations[key]) {
-                                allFormations[key] = result.record.formations[key];
+                            if (!allFormations[key]) return;
+                            var cloudFormation = result.record.formations[key];
+                            var cloudHasSections = cloudFormation && cloudFormation.sections && cloudFormation.sections.length > 0;
+                            var codeHasSections = allFormations[key].sections && allFormations[key].sections.length > 0;
+                            if (cloudHasSections || !codeHasSections) {
+                                allFormations[key] = cloudFormation;
                             }
                         });
                         formationData = allFormations[currentFormation];
