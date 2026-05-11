@@ -1120,7 +1120,7 @@
 
             // Nettoyage one-shot : supprimer les doublons vides "Carlos Djoco"
             // dans Conditionnement appartenant a l'utilisateur courant (crees a cause du lag)
-            var cleanupKey = 'gemef-cleanup-carlos-djoco-v1';
+            var cleanupKey = 'gemef-cleanup-carlos-djoco-v2';
             var cleanupUserUp = (cloudConfig && cloudConfig.username) ? String(cloudConfig.username).trim().toUpperCase() : '';
             if (cleanupUserUp && !localStorage.getItem(cleanupKey)) {
                 var normalizeName = function(s) {
@@ -1602,11 +1602,16 @@
                     var local = localById[id];
                     var cloud = cloudById[id];
                     var key = 'gemef-formation-' + id;
-                    var keepLocal = local && normOwner(local) === myUsernameUpper;
-                    if (keepLocal) {
+                    var localOwnedByMe = local && normOwner(local) === myUsernameUpper;
+                    var cloudOwnedByMe = cloud && normOwner(cloud) === myUsernameUpper;
+                    if (local && localOwnedByMe) {
+                        // Je suis proprietaire local : local fait foi
                         mergedProfiles.push(local);
                         var data = localStorage.getItem(key);
                         if (data) mergedProfilesData[key] = JSON.parse(data);
+                    } else if (!local && cloudOwnedByMe) {
+                        // Le cloud dit que je suis proprietaire mais le profil n'existe plus en local
+                        // -> suppression confirmee, on ne le restaure pas
                     } else if (cloud) {
                         mergedProfiles.push(cloud);
                         if (currentCloudData.profilesData && currentCloudData.profilesData[key]) {
