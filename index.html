@@ -1106,6 +1106,41 @@
                 if (cloudConfig && cloudConfig.apiKey) await saveToCloud();
             }
 
+            // Nettoyage one-shot : supprimer les profils vides de Conditionnement
+            // appartenant a l'utilisateur courant (doublons crees a cause du lag)
+            var cleanupKey = 'gemef-cleanup-empty-conditionnement-v1';
+            var cleanupUserUp = (cloudConfig && cloudConfig.username) ? String(cloudConfig.username).trim().toUpperCase() : '';
+            if (cleanupUserUp && !localStorage.getItem(cleanupKey)) {
+                var allProfilesCleanup = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
+                var didCleanup = false;
+                var keptProfiles = allProfilesCleanup.filter(function(p) {
+                    var ownerUp = p.owner ? String(p.owner).trim().toUpperCase() : '';
+                    if (p.formation !== 'conditionnement' || ownerUp !== cleanupUserUp) return true;
+                    var dataKey = 'gemef-formation-' + p.id;
+                    var raw = localStorage.getItem(dataKey);
+                    var hasData = false;
+                    if (raw) {
+                        try {
+                            var data = JSON.parse(raw);
+                            var statusCount = data && data.taskStatus ? Object.keys(data.taskStatus).length : 0;
+                            var historyCount = data && data.taskHistory ? Object.keys(data.taskHistory).length : 0;
+                            hasData = statusCount > 0 || historyCount > 0;
+                        } catch (e) { hasData = true; }
+                    }
+                    if (!hasData) {
+                        localStorage.removeItem(dataKey);
+                        didCleanup = true;
+                        return false;
+                    }
+                    return true;
+                });
+                if (didCleanup) {
+                    localStorage.setItem('gemef-profiles', JSON.stringify(keptProfiles));
+                    if (cloudConfig && cloudConfig.apiKey) await saveToCloud();
+                }
+                localStorage.setItem(cleanupKey, '1');
+            }
+
             loadProfiles();
             loadData();
             checkReadOnly();
