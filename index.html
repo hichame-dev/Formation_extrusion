@@ -1106,16 +1106,22 @@
                 if (cloudConfig && cloudConfig.apiKey) await saveToCloud();
             }
 
-            // Nettoyage one-shot : supprimer les profils vides de Conditionnement
-            // appartenant a l'utilisateur courant (doublons crees a cause du lag)
-            var cleanupKey = 'gemef-cleanup-empty-conditionnement-v1';
+            // Nettoyage one-shot : supprimer les doublons vides "Carlos Djoco"
+            // dans Conditionnement appartenant a l'utilisateur courant (crees a cause du lag)
+            var cleanupKey = 'gemef-cleanup-carlos-djoco-v1';
             var cleanupUserUp = (cloudConfig && cloudConfig.username) ? String(cloudConfig.username).trim().toUpperCase() : '';
             if (cleanupUserUp && !localStorage.getItem(cleanupKey)) {
+                var normalizeName = function(s) {
+                    return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+                };
                 var allProfilesCleanup = JSON.parse(localStorage.getItem('gemef-profiles') || '[]');
                 var didCleanup = false;
                 var keptProfiles = allProfilesCleanup.filter(function(p) {
                     var ownerUp = p.owner ? String(p.owner).trim().toUpperCase() : '';
                     if (p.formation !== 'conditionnement' || ownerUp !== cleanupUserUp) return true;
+                    var nameNorm = normalizeName(p.name);
+                    var isCarlosDjoco = nameNorm.indexOf('carlos') !== -1 && nameNorm.indexOf('djoco') !== -1;
+                    if (!isCarlosDjoco) return true;
                     var dataKey = 'gemef-formation-' + p.id;
                     var raw = localStorage.getItem(dataKey);
                     var hasData = false;
