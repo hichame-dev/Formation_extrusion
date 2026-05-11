@@ -765,7 +765,7 @@
         applyFormationTheme(currentFormation);
 
         var allFormations = {
-            extrusion: { title: "Formation Poste Extrusion", sections: [
+            extrusion: { title: "Formation Poste Extrusion", poste: "Conducteur Extrusion", sections: [
                 // DEBUT - Sécurité & Connaissances de base
                 { id: 1, title: "Sécurité / Prérequis / Contrôles préalables", tasks: [
                     "Présentation générale de l'atelier (personnel, fonctionnement)",
@@ -911,7 +911,7 @@
                     "Installer, monter et démonter élément de vis"
                 ]}
             ]},
-            conditionnement: { title: "Formation Poste Conditionnement", sections: [
+            conditionnement: { title: "Formation Poste Conditionnement", poste: "Opérateur Conditionnement", sections: [
                 { id: 1, title: "Sécurité / Prérequis / Contrôles préalables", tasks: [
                     "Présentation générale de l'atelier (personnel, fonctionnement)",
                     "Sens d'évacuation et issues de secours",
@@ -967,8 +967,8 @@
                     "Participer au nettoyage de fin de semaine"
                 ]}
             ]},
-            melanges: { title: "Formation Poste Mélanges", sections: [] },
-            meunerie: { title: "Formation Poste Meunerie", sections: [] }
+            melanges: { title: "Formation Poste Mélanges", poste: "Opérateur Mélanges", sections: [] },
+            meunerie: { title: "Formation Poste Meunerie", poste: "Opérateur Meunerie", sections: [] }
         };
 
         var formationData = allFormations[currentFormation];
@@ -1065,10 +1065,22 @@
             }
         });
 
+        function applyFormationLabels() {
+            var poste = (formationData && formationData.poste) ? formationData.poste : 'Conducteur Extrusion';
+            var posteEl = document.getElementById('poste');
+            if (posteEl) posteEl.value = poste;
+            var footerEl = document.querySelector('.footer');
+            if (footerEl) {
+                var dateText = new Date().toLocaleDateString('fr-FR');
+                footerEl.innerHTML = 'GEMEF Industries - Fiche de formation ' + poste + ' - <span id="currentDate">' + dateText + '</span>';
+            }
+        }
+
         async function initApp() {
             // Initialiser le sélecteur de formation
             document.getElementById('formationSelect').value = currentFormation;
             document.getElementById('headerTitle').textContent = formationData.title;
+            applyFormationLabels();
 
             // Afficher l'utilisateur connecté
             if (currentUser) {
@@ -1259,6 +1271,7 @@
             applyFormationTheme(currentFormation);
             formationData = allFormations[currentFormation];
             document.getElementById('headerTitle').textContent = formationData.title;
+            applyFormationLabels();
 
             // Recharger les profils filtrés par formation et réinitialiser la sélection
             currentProfile = null;
