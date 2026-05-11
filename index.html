@@ -358,8 +358,7 @@
             <select id="formationSelect" class="profile-select" onchange="switchFormation()" style="min-width: 160px;">
                 <option value="extrusion">Extrusion</option>
                 <option value="conditionnement">Conditionnement</option>
-                <option value="melanges">Mélanges</option>
-                <option value="meunerie">Meunerie</option>
+                <option value="melanges">Mélanges / Meunerie</option>
             </select>
             <span style="border-left: 2px solid rgba(255,255,255,0.3); height: 24px; margin: 0 10px;"></span>
             <button class="profile-btn" onclick="showCloudModal()" id="cloudBtn" style="display:none;">&#9729; Cloud Sync</button>
@@ -722,6 +721,11 @@
         }
 
         var currentFormation = localStorage.getItem('gemef-current-formation') || 'extrusion';
+        // Fusion meunerie -> melanges : rediriger les sessions encore sur meunerie
+        if (currentFormation === 'meunerie') {
+            currentFormation = 'melanges';
+            localStorage.setItem('gemef-current-formation', 'melanges');
+        }
 
         var formationThemes = {
             extrusion: {
@@ -741,12 +745,6 @@
                 light: '#F0F7FF', lighter: '#E6F0FA',
                 shadow: 'rgba(46, 134, 193, 0.15)', shadow2: 'rgba(46, 134, 193, 0.2)',
                 border: '#B0CDE0'
-            },
-            meunerie: {
-                primary: '#E87722', dark: '#C5611A',
-                light: '#FFF8F3', lighter: '#FFEFE5',
-                shadow: 'rgba(232, 119, 34, 0.15)', shadow2: 'rgba(232, 119, 34, 0.2)',
-                border: '#E0D0C5'
             }
         };
 
@@ -967,7 +965,7 @@
                     "Participer au nettoyage de fin de semaine"
                 ]}
             ]},
-            melanges: { title: "Formation Poste Mélanges", poste: "Opérateur Mélanges", sections: [
+            melanges: { title: "Formation Poste Mélanges / Meunerie", poste: "Opérateur Mélanges / Meunerie", sections: [
                 { id: 1, title: "Sécurité / Prérequis / Contrôles préalables", tasks: [
                     "Présentation générale de l'atelier (personnel, fonctionnement)",
                     "Sens d'évacuation et issues de secours",
@@ -1089,8 +1087,7 @@
                     "Signaler à ses collègues tout départ du poste (pause, administratif, etc.)",
                     "Apporter son aide à ses collègues en cas de surcharge de travail"
                 ]}
-            ]},
-            meunerie: { title: "Formation Poste Meunerie", poste: "Opérateur Meunerie", sections: [] }
+            ]}
         };
 
         var formationData = allFormations[currentFormation];
@@ -1233,6 +1230,7 @@
             migrateProfiles.forEach(function(p) {
                 if (!p.owner && migrateUsername) { p.owner = migrateUsername; needsMigration = true; }
                 if (!p.formation) { p.formation = 'extrusion'; needsMigration = true; }
+                if (p.formation === 'meunerie') { p.formation = 'melanges'; needsMigration = true; }
             });
             if (needsMigration) {
                 localStorage.setItem('gemef-profiles', JSON.stringify(migrateProfiles));
@@ -2440,8 +2438,8 @@
 
         function renderAdminTabs() {
             var tabs = document.getElementById('adminFormationTabs');
-            var formations = ['extrusion', 'conditionnement', 'melanges', 'meunerie'];
-            var labels = { extrusion: 'Extrusion', conditionnement: 'Conditionnement', melanges: 'Melanges', meunerie: 'Meunerie' };
+            var formations = ['extrusion', 'conditionnement', 'melanges'];
+            var labels = { extrusion: 'Extrusion', conditionnement: 'Conditionnement', melanges: 'Melanges / Meunerie' };
             tabs.innerHTML = formations.map(function(f) {
                 return '<button class="admin-tab ' + (f === adminCurrentFormation ? 'active' : '') + '" onclick="adminSelectFormation(\'' + f + '\')">' + labels[f] + '</button>';
             }).join('');
